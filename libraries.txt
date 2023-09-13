@@ -1,2 +1,2 @@
 django-phonenumber-field
-
+django-bootstrap-v5
