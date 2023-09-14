@@ -89,7 +89,7 @@ function load_employer_form() {
 
         <div class="form-group mt-5">
             <label for="first_name" class="form-label">Your company (if any)</label>
-            <input class="form-control mt-1" type="text" name="company_name" id="company_name" placeholder="Company name">
+            <input class="form-control mt-1" type="text" name="company_name" id="company_name" placeholder="Company name *" required>
             <input class="form-control mt-1" type="url" id="company_logo" name="company_logo" placeholder="Company logo URL">
         </div>
 

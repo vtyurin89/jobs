@@ -13,6 +13,7 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         return super().save(*args, **kwargs)
 
+
 class JobSeekerProfile(models.Model):
     GENDER_CHOICES = (
         ('P', 'Prefer not to say'),
@@ -35,6 +36,53 @@ class EmployerProfile(models.Model):
     phone_number = PhoneNumberField(null=True, blank=True, unique=True)
 
 
+class JobPosting(models.Model):
+    INDUSTRY_CHOICES = (
+        ('1', 'Unspecified'),
+        ('2', 'Consulting'),
+        ('3', 'Accounting'),
+        ('4', 'Finance'),
+        ('5', 'Advertising'),
+        ('6', 'Human Resources'),
+        ('7', 'Sales'),
+        ('8', 'News & Media'),
+        ('9', 'Insurance'),
+        ('10', 'Entertainment'),
+        ('11', 'Marketing'),
+        ('12', 'Science & Research'),
+        ('13', 'Tech'),
+        ('14', 'Healthcare'),
+        ('15', 'Manufacturing'),
+    )
+    COUNTRY_CHOICES = (
+        ('1', 'Russia'),
+        ('2', 'Kazakhstan'),
+        ('3', 'Belarus'),
+        ('4', 'Uzbekistan'),
+        ('5', 'Azerbaijan'),
+        ('6', 'Georgia'),
+        ('7', 'Kyrgyzstan'),
+    )
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=200)
+    industry = models.CharField(max_length=3, choices=INDUSTRY_CHOICES, default='1')
+    country = models.CharField(max_length=3, choices=COUNTRY_CHOICES, default='1')
+    city = models.CharField(max_length=100)
+    job_description = models.TextField(max_length=10000)
+    additional_information = models.TextField(max_length=10000, null=True, blank=True)
+    experience_required = models.CharField(max_length=10000)
+    does_not_need_experience = models.BooleanField(default=False)
+    is_remote = models.BooleanField(default=False)
+    is_part_time = models.BooleanField(default=False)
+    employer = models.ForeignKey('User', on_delete=models.CASCADE, related_name='employers')
+    job_open_date = models.DateTimeField(auto_now_add=True)
+    min_salary = models.DecimalField(max_digits=10, decimal_places=2)
+    max_salary = models.DecimalField(max_digits=10, decimal_places=2)
+    visible = models.BooleanField(default=True)
+    liked = models.ManyToManyField('User', blank=True, related_name='liked_post')
+
+
+# Maybe implement later...
 # @receiver(post_save, sender=User)
 # def create_user_profile(sender, instance, created, **kwargs):
 #     if created:

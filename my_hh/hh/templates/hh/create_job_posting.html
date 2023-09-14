@@ -1,0 +1,32 @@
+{% extends "hh/layout.html" %}
+
+{% block title %}Create a posting{% endblock %}
+
+{% block body %}
+
+    <!-- Form to create a new posting -->
+
+        <div class="container mt-5">
+        <div class="row d-flex justify-content-center mt-5">
+        <div class="col-md-12 col-lg-9 ps-3 pe-3">
+        <div class="d-flex justify-content-center"><h2 id="register_label">Create a new job posting</h2></div>
+
+        <form method="post">
+
+        {% csrf_token %}
+        <div>{{ form.non_field_errors }}</div>
+        {% for part in form %}
+        <p><label for="{{ part.id_for_label }}" class="form-label"> {{ part.label }}: </label>{{ part }} </p>
+        <div>{{ part.errors }}</div>
+        {% endfor %}
+      <div class="text-center">
+      <!-- Submit button -->
+      <button type="submit" class="btn btn-primary btn-block mb-4">Submit</button>
+      </div>
+
+    </form>
+    </div>
+    </div>
+    </div>
+
+{% endblock body %}

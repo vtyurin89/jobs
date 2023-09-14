@@ -1,14 +1,26 @@
 from django.contrib.auth import logout, authenticate, login
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib import messages
 from django.db import IntegrityError
+from django.core.exceptions import PermissionDenied
 
 from .models import *
+from .forms import *
 
 def index(request):
     return render(request, "hh/index.html")
+
+
+@login_required
+def create_job_posting_view(request):
+    if not request.user.is_employer:
+        raise PermissionDenied()
+    form = CreateJobPostingForm()
+    context = {'form': form}
+    return render(request, "hh/create_job_posting.html", context)
 
 
 def login_view(request):
@@ -36,7 +48,7 @@ def logout_view(request):
     return HttpResponseRedirect(reverse("index"))
 
 
-def register(request):
+def register_view(request):
     if request.method == 'POST':
 
         username = request.POST["username"]

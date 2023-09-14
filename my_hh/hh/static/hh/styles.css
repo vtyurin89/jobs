@@ -31,11 +31,21 @@ header {
     color: white;
 }
 
+/* Logo */
 .logo {
     margin-bottom: 0;
     margin-top: 10px;
     margin-left: 10px;
     margin-right: 5px;
+}
+
+.link-no-decoration {
+    text-decoration: none;
+    color: inherit;
+}
+
+.link-no-decoration:hover {
+    color: inherit;
 }
 
 .button-header {
@@ -56,4 +66,10 @@ main {
 .index-search-bar-div {
     max-width: 800px;
     margin: auto;
+}
+
+
+/* Job posting form */
+input[type="checkbox"] {
+  transform:scale(1.5, 1.5);
 }
