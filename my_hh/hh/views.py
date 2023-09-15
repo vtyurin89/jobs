@@ -1,7 +1,7 @@
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib import messages
 from django.db import IntegrityError
@@ -10,15 +10,36 @@ from django.core.exceptions import PermissionDenied
 from .models import *
 from .forms import *
 
+
 def index(request):
-    return render(request, "hh/index.html")
+    if request.user:
+        job_postings = JobPosting.objects.all()
+        if request.user.is_employer:
+            pass
+        elif not request.user.is_employer:
+            pass
+        context = {'job_postings' : job_postings}
+    return render(request, "hh/index.html", context)
 
 
 @login_required
 def create_job_posting_view(request):
+
+    # Only an employer account allowed on the page
     if not request.user.is_employer:
         raise PermissionDenied()
-    form = CreateJobPostingForm()
+
+    # Creating a new job posting using a form
+    form = CreateJobPostingForm(request.POST or None)
+    if request.method == 'POST':
+        form = CreateJobPostingForm(request.POST, employer=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Job posting successfully created.")
+            return redirect('index')
+        else:
+            for error in list(form.errors.values()):
+                messages.error(request, error)
     context = {'form': form}
     return render(request, "hh/create_job_posting.html", context)
 
@@ -94,5 +115,6 @@ def register_view(request):
             )
             new_profile.save()
         login(request, user)
+        messages.success(request, "Welcome!")
         return HttpResponseRedirect(reverse("index"))
     return render(request, "hh/register.html")

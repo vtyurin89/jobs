@@ -14,28 +14,6 @@ class User(AbstractUser):
         return super().save(*args, **kwargs)
 
 
-class JobSeekerProfile(models.Model):
-    GENDER_CHOICES = (
-        ('P', 'Prefer not to say'),
-        ('M', 'Male'),
-        ('F', 'Female'),
-        ('U', 'Unspecified'),
-    )
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='U')
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.URLField(null=True, blank=True, verbose_name='Profile image')
-    phone_number = PhoneNumberField(null=True, blank=True, unique=True)
-    telegram_ID = models.CharField(max_length=50, null=True, blank=True)
-
-
-class EmployerProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    telegram_ID = models.CharField(max_length=50, null=True, blank=True)
-    company_name = models.CharField(max_length=150, null=True, blank=True)
-    company_logo = models.URLField(null=True, blank=True, verbose_name='Company logo')
-    phone_number = PhoneNumberField(null=True, blank=True, unique=True)
-
-
 class JobPosting(models.Model):
     INDUSTRY_CHOICES = (
         ('1', 'Unspecified'),
@@ -80,6 +58,30 @@ class JobPosting(models.Model):
     max_salary = models.DecimalField(max_digits=10, decimal_places=2)
     visible = models.BooleanField(default=True)
     liked = models.ManyToManyField('User', blank=True, related_name='liked_post')
+
+
+class JobSeekerProfile(models.Model):
+    GENDER_CHOICES = (
+        ('P', 'Prefer not to say'),
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ('U', 'Unspecified'),
+    )
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='U')
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    image = models.URLField(null=True, blank=True, verbose_name='Profile image')
+    phone_number = PhoneNumberField(null=True, blank=True, unique=True)
+    telegram_ID = models.CharField(max_length=50, null=True, blank=True)
+    preferred_location = models.CharField(max_length=100, null=True, blank=True)
+    preferred_industry = models.CharField(max_length=3, choices=JobPosting.INDUSTRY_CHOICES, default='1')
+
+
+class EmployerProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    telegram_ID = models.CharField(max_length=50, null=True, blank=True)
+    company_name = models.CharField(max_length=150, null=True, blank=True)
+    company_logo = models.URLField(null=True, blank=True, verbose_name='Company logo')
+    phone_number = PhoneNumberField(null=True, blank=True, unique=True)
 
 
 # Maybe implement later...

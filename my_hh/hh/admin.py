@@ -14,7 +14,7 @@ class EmployerProfileAdmin(admin.ModelAdmin):
 
 
 class JobPostingAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'industry', 'visible',)
+    list_display = ('title', 'industry', 'employer', 'visible')
 
 
 admin.site.register(User, UserAdmin)
