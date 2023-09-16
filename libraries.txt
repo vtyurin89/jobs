@@ -1,2 +1,8 @@
-django-phonenumber-field
-django-bootstrap-v5
+Labs:
+ - django-phonenumber-field
+ - django-bootstrap-v5
+
+
+
+Other techs:
+ - Country State City API

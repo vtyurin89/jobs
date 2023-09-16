@@ -12,13 +12,15 @@ from .forms import *
 
 
 def index(request):
-    if request.user:
+    if request.user.is_authenticated:
         job_postings = JobPosting.objects.all()
         if request.user.is_employer:
             pass
         elif not request.user.is_employer:
             pass
         context = {'job_postings' : job_postings}
+    else:
+        context = {}
     return render(request, "hh/index.html", context)
 
 

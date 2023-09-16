@@ -1,4 +1,5 @@
 {% extends "hh/layout.html" %}
+{% load static %}
 
 {% block title %}Create a posting{% endblock %}
 
@@ -30,3 +31,7 @@
     </div>
 
 {% endblock body %}
+
+{% block script %}
+    <script src="{% static 'hh/job_posting.js' %}"></script>
+{% endblock %}

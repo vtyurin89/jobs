@@ -15,9 +15,9 @@ class CreateJobPostingForm(ModelForm):
     industry = forms.ChoiceField(label='Industry', required=True, choices=JobPosting.INDUSTRY_CHOICES,
                                  widget=forms.Select(attrs={'class': 'form-select', 'name': 'industry'}))
     country = forms.ChoiceField(label='Country', required=True, choices=JobPosting.COUNTRY_CHOICES,
-                                 widget=forms.Select(attrs={'class': 'form-select', 'name': 'country'}))
-    city = forms.CharField(label='City', required=True,
-                                 widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'city'}))
+                                 widget=forms.Select(attrs={'class': 'form-select', 'name': 'country', 'id': 'country'}))
+    city = forms.ChoiceField(label='City', required=True,
+                                 widget=forms.Select(attrs={'class': 'form-select', 'name': 'city', 'id': 'city'}))
     job_description = forms.CharField(label='Describe the job', required=True,
                                  widget=forms.Textarea(attrs={'rows': 6, 'class': 'form-control', 'name': 'job_description'}))
     experience_required = forms.CharField(label='Job requirements', required=True,
