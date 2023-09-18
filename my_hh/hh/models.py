@@ -33,18 +33,18 @@ class JobPosting(models.Model):
         ('15', 'Manufacturing'),
     )
     COUNTRY_CHOICES = (
-        ('1', 'Russia'),
-        ('2', 'Kazakhstan'),
-        ('3', 'Belarus'),
-        ('4', 'Uzbekistan'),
-        ('5', 'Azerbaijan'),
-        ('6', 'Georgia'),
-        ('7', 'Kyrgyzstan'),
+        ('RU', 'Russia'),
+        ('KZ', 'Kazakhstan'),
+        ('BY', 'Belarus'),
+        ('UZ', 'Uzbekistan'),
+        ('AZ', 'Azerbaijan'),
+        ('GE', 'Georgia'),
+        ('KG', 'Kyrgyzstan'),
     )
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200)
     industry = models.CharField(max_length=3, choices=INDUSTRY_CHOICES, default='1')
-    country = models.CharField(max_length=3, choices=COUNTRY_CHOICES, default='1')
+    country = models.CharField(max_length=3, choices=COUNTRY_CHOICES, default='KZ')
     city = models.CharField(max_length=100)
     job_description = models.TextField(max_length=10000)
     additional_information = models.TextField(max_length=10000, null=True, blank=True)

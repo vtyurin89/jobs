@@ -73,3 +73,22 @@ main {
 input[type="checkbox"] {
   transform:scale(1.5, 1.5);
 }
+
+.dropdown-autocomplete-list {
+    list-style: none;
+    padding: unset;
+}
+
+.dropdown-autocomplete-list button {
+    border: none;
+    background: none;
+}
+
+.dropdown-autocomplete-list li {
+    border: 1px solid lightgray;
+    border-top: none;
+}
+
+.dropdown-autocomplete-list li:hover {
+    background: #f6f6f6;
+}

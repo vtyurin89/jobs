@@ -12,7 +12,7 @@
         <div class="col-md-12 col-lg-9 ps-3 pe-3">
         <div class="d-flex justify-content-center"><h2 id="register_label">Create a new job posting</h2></div>
 
-        <form method="post">
+        <form method="post" autocomplete="off">
 
         {% csrf_token %}
         <div>{{ form.non_field_errors }}</div>
