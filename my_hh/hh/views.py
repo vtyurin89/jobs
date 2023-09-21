@@ -99,21 +99,25 @@ def register_view(request):
 
         # Creating additional profile
         if user.is_employer:
-            new_profile = EmployerProfile.objects.create(
-                user=user,
-                company_name=request.POST['company_name'],
-                company_logo=request.POST['company_logo'],
-                telegram_ID=request.POST['telegram_ID'],
-                phone_number=request.POST['phone_number'],
-            )
+            new_profile = EmployerProfile.objects.create(user=user)
+            if request.POST['company_logo']:
+                new_profile.company_logo = request.POST['company_logo']
+            if request.POST['company_name']:
+                new_profile.company_name = request.POST['company_name']
+            if request.POST['telegram_ID']:
+                new_profile.telegram_ID = request.POST['telegram_ID']
+            if request.POST['phone_number']:
+                new_profile.phone_number = request.POST['phone_number']
             new_profile.save()
         else:
             new_profile = JobSeekerProfile.objects.create(
                 user=user,
-                image=request.POST['photo'],
-                telegram_ID=request.POST['telegram_ID'],
-                phone_number=request.POST['phone_number'],
-                gender=request.POST['gender'],
+                image=request.POST.get('photo', None),
+                telegram_ID=request.POST.get('telegram_ID', None),
+                phone_number=request.POST.get('phone_number', None),
+                gender=request.POST.get('gender', None),
+                preferred_country=request.POST.get('country', None),
+                preferred_location=request.POST.get('city', None),
             )
             new_profile.save()
         login(request, user)

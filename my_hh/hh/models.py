@@ -70,8 +70,9 @@ class JobSeekerProfile(models.Model):
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='U')
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.URLField(null=True, blank=True, verbose_name='Profile image')
-    phone_number = PhoneNumberField(null=True, blank=True, unique=True)
+    phone_number = PhoneNumberField(null=True, blank=True)
     telegram_ID = models.CharField(max_length=50, null=True, blank=True)
+    preferred_country = models.CharField(max_length=100, null=True, blank=True)
     preferred_location = models.CharField(max_length=100, null=True, blank=True)
     preferred_industry = models.CharField(max_length=3, choices=JobPosting.INDUSTRY_CHOICES, default='1')
 
