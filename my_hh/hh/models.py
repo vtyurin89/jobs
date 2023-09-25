@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from phonenumber_field.modelfields import PhoneNumberField
 import uuid
+from django.urls import reverse
 
 
 class User(AbstractUser):
@@ -43,7 +44,7 @@ class JobPosting(models.Model):
     )
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200)
-    industry = models.CharField(max_length=3, choices=INDUSTRY_CHOICES, default='1')
+    industry = models.ForeignKey('Industry', on_delete=models.CASCADE)
     country = models.CharField(max_length=3, choices=COUNTRY_CHOICES, default='KZ')
     city = models.CharField(max_length=100)
     job_description = models.TextField(max_length=10000)
@@ -58,6 +59,22 @@ class JobPosting(models.Model):
     max_salary = models.DecimalField(max_digits=10, decimal_places=2)
     visible = models.BooleanField(default=True)
     liked = models.ManyToManyField('User', blank=True, related_name='liked_post')
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse('job_posting', kwargs={'job_posting_uuid': self.id})
+
+
+class Industry(models.Model):
+    title = models.CharField(max_length=200)
+
+    class Meta:
+        verbose_name_plural = "Industries"
+
+    def __str__(self):
+        return self.title
 
 
 class JobSeekerProfile(models.Model):
@@ -76,18 +93,32 @@ class JobSeekerProfile(models.Model):
     preferred_location = models.CharField(max_length=100, null=True, blank=True)
     preferred_industry = models.CharField(max_length=3, choices=JobPosting.INDUSTRY_CHOICES, default='1')
 
+    def __str__(self):
+        return f'{self.user}_profile'
+
 
 class EmployerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     telegram_ID = models.CharField(max_length=50, null=True, blank=True)
     company_name = models.CharField(max_length=150, null=True, blank=True)
     company_logo = models.URLField(null=True, blank=True, verbose_name='Company logo')
-    phone_number = PhoneNumberField(null=True, blank=True, unique=True)
+    phone_number = PhoneNumberField(null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.user}_profile'
 
 
-# Maybe implement later...
+
 # @receiver(post_save, sender=User)
 # def create_user_profile(sender, instance, created, **kwargs):
+#     """
+#     Creates user profile if it does not exist
+#     :param sender: User
+#     :param instance:
+#     :param created:
+#     :param kwargs:
+#     :return:
+#     """
 #     if created:
 #         if instance.is_employer:
 #             EmployerProfile.objects.get_or_create(user=instance)

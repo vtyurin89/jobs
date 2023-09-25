@@ -43,14 +43,62 @@
         <button class="btn btn-outline-primary" type="submit">Search</button>
         </form>
         </div>
-        <hr class="mt-5">
 
-        <div class="container">
-         <h3>Featured jobs</h3>
-        {% for job_posting in job_postings %}
-        {{ job_posting.title }}
+        <!-- Jobs in user's location -->
+        {% if jobs_in_location %}
+        <hr class="mt-5">
+        <div class="container mb-5">
+            {% if user.jobseekerprofile.preferred_location %}
+         <h4>Featured jobs in {{ user.jobseekerprofile.preferred_location }}</h4>
+            {% else %}
+         <h4>Featured jobs</h4>
+            {% endif %}
+         <div class="row row-cols-1 row-cols-md-3 g-4">
+         {% for job in jobs_in_location %}
+         <div class="col-lg-4 col-md-6">
+         <div class="card featured-job">
+                <a href="{{ job.get_absolute_url }}"><div class="card-body">
+
+                <div class="d-flex justify-content-between">
+                    <h5 >{{ job.title }}</h5>
+                </div>
+                <div>From {{ job.min_salary }}</div>
+                    {% if job.employer.company %}
+                    <div>{{ job.city }}, {{ job.employer.company }}</div>
+                    {% else %}
+                    <div>{{ job.city }}</div>
+                    {% endif %}
+                </div></a>
+                </div>
+             </div>
          {% endfor %}
+         </div>
+        {% endif %}
         </div>
+
+        <!-- Jobs in work sectors in user's location -->
+        {% if industries_gt0_in_location %}
+        <hr class="mt-7">
+        <div class="container">
+            {% if user.jobseekerprofile.preferred_location %}
+         <h4>Jobs in sectors in {{ user.jobseekerprofile.preferred_location }}</h4>
+            {% else %}
+         <h4>Jobs in sectors</h4>
+            {% endif %}
+         <div class="row row-cols-1 row-cols-md-3 g-2">
+         {% for industry in industries_gt0_in_location %}
+         <div class="col-lg-3 col-md-6">
+         <div class="card border-0 p-0">
+         <div class="card-body">
+             {{ industry.title }}
+              </div>
+             </div>
+         </div>
+         {% endfor %}
+
+        </div>
+        {% endif %}
+
 
         {% endif %}
 {% endblock body %}

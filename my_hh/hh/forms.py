@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from django.forms import ModelForm
+from django.forms import ModelForm, ModelChoiceField
 
 from .models import *
 
@@ -12,7 +12,7 @@ class CreateJobPostingForm(ModelForm):
 
     title = forms.CharField(label='Title', max_length=500, required=True,
                                  widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'title'}))
-    industry = forms.ChoiceField(label='Industry', required=True, choices=JobPosting.INDUSTRY_CHOICES,
+    industry = ModelChoiceField(label='Industry', required=True, queryset=Industry.objects.all(),
                                  widget=forms.Select(attrs={'class': 'form-select', 'name': 'industry'}))
     country = forms.ChoiceField(label='Country', required=True, choices=JobPosting.COUNTRY_CHOICES,
                                  widget=forms.Select(attrs={'class': 'form-select', 'name': 'country', 'id': 'country'}))
@@ -26,7 +26,7 @@ class CreateJobPostingForm(ModelForm):
                                   widget=forms.CheckboxInput(attrs={'class': 'form-check-input ms-3', 'name': 'does_not_need_experience'}))
     is_remote = forms.BooleanField(label="This is a remote job", required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check-input ms-3',
                                                                                     'name': 'is_remote'}))
-    is_part_time = forms.BooleanField(label="Part-time work possible", required=False,
+    is_part_time = forms.BooleanField(label="This is a part-time job", required=False,
                                       widget=forms.CheckboxInput(attrs={'class': 'form-check-input ms-3',
                                                                                     'name': 'is_part_time'}))
     additional_information = forms.CharField(label='Additional information that you want to provide', required=False,

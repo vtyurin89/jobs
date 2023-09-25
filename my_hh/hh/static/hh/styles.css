@@ -68,6 +68,21 @@ main {
     margin: auto;
 }
 
+.featured-job:hover {
+    box-shadow: 0 14px 30px -15px rgba(0, 0, 0, 0.75);
+    transition: all .3s;
+}
+
+.featured-job {
+    border-radius: 8px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.featured-job a {
+    text-decoration: none;
+    color: inherit;
+}
+
 
 /* Job posting form */
 input[type="checkbox"] {
@@ -112,4 +127,51 @@ input[type="checkbox"] {
 
 .text-left {
   text-align: left !important;
+}
+
+
+/* job posting page */
+
+.job-posting-top {
+    min-height: 200px;
+    box-shadow: 0 2px 12px 0 rgba(48, 50, 51, 0.1);
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.job-posting-company {
+    min-height: 200px;
+    box-shadow: 0 2px 12px 0 rgba(48, 50, 51, 0.1);
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.job-posting-salary-info {
+    font-size: 24px;
+    font-weight: 400;
+}
+
+.job-description {
+    margin-bottom: 2px;
+    font-size: 16px;
+}
+
+.description-button-div {
+    margin-top: 15px;
+}
+
+.btn-custom-job-respond {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 90px;
+    padding-right: 90px;
+    text-align: center;
+    height: 46px;
+}
+
+.btn-favourite {
+    padding-top: 21px;
+    text-align: center;
+    height: 46px;
+    margin-left: 10px;
 }

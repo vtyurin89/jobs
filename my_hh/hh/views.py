@@ -1,27 +1,63 @@
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
+from django.db.models import Count
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib import messages
 from django.db import IntegrityError
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 
 from .models import *
 from .forms import *
 
 
 def index(request):
+    context = {}
     if request.user.is_authenticated:
         job_postings = JobPosting.objects.all()
+        context = {'job_postings' : job_postings}
+
+        #loading index page for employer
         if request.user.is_employer:
             pass
+
+        # loading index page for job seeker
+        # job seeker has a city
         elif not request.user.is_employer:
-            pass
-        context = {'job_postings' : job_postings}
-    else:
-        context = {}
+            # job seeker has a city
+            if request.user.jobseekerprofile.preferred_location:
+                jobs_in_location = JobPosting.objects.filter(country=request.user.jobseekerprofile.preferred_country,
+                                                             city=request.user.jobseekerprofile.preferred_location).order_by(
+                                                                "-job_open_date").select_related('industry')[:12]
+                industries_gt0_in_location = Industry.objects.annotate(cnt_jobpostings=Count('jobposting')).filter(
+                                                cnt_jobpostings__gt=0, jobposting__country=request.user.jobseekerprofile.preferred_country,
+                                                jobposting__city=request.user.jobseekerprofile.preferred_location)
+                if jobs_in_location:
+                    context.update({'jobs_in_location': jobs_in_location})
+                if industries_gt0_in_location:
+                    context.update({'industries_gt0_in_location': industries_gt0_in_location})
+            # job seeker does not have a city
+            elif not request.user.jobseekerprofile.preferred_location:
+                jobs_in_location = JobPosting.objects.all().order_by(
+                                    "-job_open_date").select_related('industry')[:12]
+                industries_gt0_in_location = Industry.objects.annotate(cnt_jobpostings=Count('jobposting')).filter(
+                                                cnt_jobpostings__gt=0)
+                if jobs_in_location:
+                    context.update({'jobs_in_location': jobs_in_location})
+                if industries_gt0_in_location:
+                    context.update({'industries_gt0_in_location': industries_gt0_in_location})
     return render(request, "hh/index.html", context)
+
+
+@login_required
+def job_posting_view(request, job_posting_uuid):
+    try:
+        job_posting = JobPosting.objects.get(id=job_posting_uuid)
+    except ObjectDoesNotExist:
+        raise Http404
+    context = {'job_posting': job_posting}
+    return render(request, "hh/job_posting.html", context)
 
 
 @login_required
@@ -93,24 +129,21 @@ def register_view(request):
             user.last_name = last_name
             user.save()
         except IntegrityError:
-            return render(request, "hh/register.html", {
-                "message": "Username already taken."
-            })
+            messages.error(request, "Username already taken")
+            return render(request, "hh/register.html")
 
         # Creating additional profile
         if user.is_employer:
-            new_profile = EmployerProfile.objects.create(user=user)
-            if request.POST['company_logo']:
-                new_profile.company_logo = request.POST['company_logo']
-            if request.POST['company_name']:
-                new_profile.company_name = request.POST['company_name']
-            if request.POST['telegram_ID']:
-                new_profile.telegram_ID = request.POST['telegram_ID']
-            if request.POST['phone_number']:
-                new_profile.phone_number = request.POST['phone_number']
-            new_profile.save()
+            new_profile = EmployerProfile.objects.get_or_create(
+                user=user,
+                company_name=request.POST.get('company_name', None),
+                company_logo=request.POST.get('company_logo', None),
+                telegram_ID=request.POST.get('telegram_ID', None),
+                phone_number=request.POST.get('phone_number', None),
+            )
+            new_profile[0].save()
         else:
-            new_profile = JobSeekerProfile.objects.create(
+            new_profile = JobSeekerProfile.objects.get_or_create(
                 user=user,
                 image=request.POST.get('photo', None),
                 telegram_ID=request.POST.get('telegram_ID', None),
@@ -119,7 +152,7 @@ def register_view(request):
                 preferred_country=request.POST.get('country', None),
                 preferred_location=request.POST.get('city', None),
             )
-            new_profile.save()
+            new_profile[0].save()
         login(request, user)
         messages.success(request, "Welcome!")
         return HttpResponseRedirect(reverse("index"))

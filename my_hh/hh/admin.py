@@ -14,7 +14,12 @@ class EmployerProfileAdmin(admin.ModelAdmin):
 
 
 class JobPostingAdmin(admin.ModelAdmin):
-    list_display = ('title', 'industry', 'employer', 'visible')
+    list_display = ('title', 'industry', 'employer', 'visible', 'id')
+
+
+class IndustryAdmin(admin.ModelAdmin):
+    list_display = ('title',)
+    
 
 
 admin.site.register(User, UserAdmin)
@@ -22,3 +27,4 @@ admin.site.register(User, UserAdmin)
 admin.site.register(JobSeekerProfile, JobSeekerProfileAdmin)
 admin.site.register(EmployerProfile, EmployerProfileAdmin)
 admin.site.register(JobPosting, JobPostingAdmin)
+admin.site.register(Industry, IndustryAdmin)
