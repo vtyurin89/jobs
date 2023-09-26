@@ -170,8 +170,15 @@ input[type="checkbox"] {
 }
 
 .btn-favourite {
-    padding-top: 21px;
+    padding-top: 22px;
     text-align: center;
     height: 46px;
     margin-left: 10px;
+}
+
+.job-details-block {
+    box-shadow: 0 2px 12px 0 rgba(48, 50, 51, 0.1);
+    border-radius: 4px;
+    padding: 20px;
+    font-size: 16px;
 }

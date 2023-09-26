@@ -1,10 +1,11 @@
 {% extends "hh/layout.html" %}
 {% load static %}
+{% load humanize %}
 
-{% block title %}Job posting{% endblock %}
+{% block title %}{{ job_posting.title }}{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
      <div class="row row-cols-1 row-cols-md-2 g-4">
           <div class="col-lg-8">
           <div class=" container job-posting-top">
@@ -12,7 +13,7 @@
 
               <!-- Salary -->
               {% if job_posting.min_salary and job_posting.max_salary %}
-               <div class="mt-3"><span class="job-posting-salary-info">from {{ job_posting.min_salary }} to {{ job_posting.max_salary }} before taxes</span></div>
+               <div class="mt-3"><span class="job-posting-salary-info">from {{ job_posting.min_salary.normalize  | intcomma }} to {{ job_posting.max_salary.normalize | intcomma }} ₽ before taxes</span></div>
               {% endif %}
 
               <div class="job-posting-description mt-3">
@@ -39,10 +40,30 @@
      </div>
 
     <!-- Job desription -->
-    <div class="container mt-5">
+    <div class="container mt-5 p-0">
+        <div class="job-details-block">
+            <h3>Job description </h3>
         {{ job_posting.job_description | linebreaks }}
+        </div>
     </div>
 
+        <!-- Job qualifications/requirements -->
+    <div class="container mt-5 p-0">
+        <div class="job-details-block">
+            <h3>Qualifications/Requirements</h3>
+        {{ job_posting.experience_required | linebreaks }}
+        </div>
+    </div>
+
+        {% if job_posting.additional_information %}
+        <!-- Additional information -->
+    <div class="container mt-5 p-0">
+        <div class="job-details-block">
+            <h3>Additional information</h3>
+        {{ job_posting.additional_information | linebreaks }}
+        </div>
+    </div>
+        {% endif %}
 
 </div>
 

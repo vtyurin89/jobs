@@ -1,4 +1,5 @@
 {% extends "hh/layout.html" %}
+{% load humanize %}
 
 {% block title %}Jobs{% endblock %}
 
@@ -62,9 +63,9 @@
                 <div class="d-flex justify-content-between">
                     <h5 >{{ job.title }}</h5>
                 </div>
-                <div>From {{ job.min_salary }}</div>
-                    {% if job.employer.company %}
-                    <div>{{ job.city }}, {{ job.employer.company }}</div>
+                <div>From {{ job.min_salary.normalize | intcomma }} ₽</div>
+                    {% if job.employer.employerprofile.company_name %}
+                    <div>{{ job.city }}, {{ job.employer.employerprofile.company_name }}</div>
                     {% else %}
                     <div>{{ job.city }}</div>
                     {% endif %}

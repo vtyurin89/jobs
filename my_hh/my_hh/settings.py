@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'hh.apps.HhConfig',
     'phonenumber_field',
     'bootstrap5',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
