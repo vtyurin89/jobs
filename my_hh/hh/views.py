@@ -1,12 +1,13 @@
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib import messages
 from django.db import IntegrityError
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+import json
 
 
 from .models import *
@@ -57,8 +58,50 @@ def job_posting_view(request, job_posting_uuid):
         job_posting = JobPosting.objects.get(id=job_posting_uuid)
     except ObjectDoesNotExist:
         raise Http404
-    context = {'job_posting': job_posting}
+    is_liked_by_user_filter = job_posting.liked.filter(id=request.user.id)
+    is_liked_by_user = True if len(is_liked_by_user_filter) > 0 else False
+    context = {'job_posting': job_posting, 'is_liked_by_user': is_liked_by_user}
     return render(request, "hh/job_posting.html", context)
+
+
+@login_required
+def like_job_posting(request, job_posting_uuid):
+    if request.user.is_employer:
+        return JsonResponse({
+            "error": "Only job seekers can add to favourites."
+        }, status=400)
+    else:
+        try:
+            current_job_posting = JobPosting.objects.get(id=job_posting_uuid)
+        except ObjectDoesNotExist:
+            return JsonResponse({'error': 'Job posting not found!'}, status=404)
+        if request.method == 'PUT':
+            data = json.loads(request.body)
+
+            #Checking if the user has the job posting in favourites or not
+            if data.get('favourite') is not None:
+                try:
+                    is_liked_by_user_filter = current_job_posting.liked.get(id=request.user.id)
+                    is_liked_by_user = True
+                except ObjectDoesNotExist:
+                    is_liked_by_user = False
+
+            #Add job posting to favourites or remove it from favourites
+                if is_liked_by_user:
+                    current_job_posting.liked.remove(request.user)
+                    currently_favourite = False
+                else:
+                    current_job_posting.liked.add(request.user)
+                    currently_favourite = True
+                current_job_posting.save()
+                return JsonResponse({
+                    "currently_favourite": currently_favourite,
+                })
+        # Only PUT request!
+        else:
+            return JsonResponse({
+                "error": "PUT request required."
+            }, status=400)
 
 
 @login_required

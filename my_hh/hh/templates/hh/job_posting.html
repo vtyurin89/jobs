@@ -27,7 +27,16 @@
               </div>
               <div class="description-button-div">
               <a class="btn btn-custom-job-respond btn-info">Respond</a>
-              <a class="btn btn-favourite btn-outline-info"><div><i class="fa-regular fa-heart fa-lg"></i></div></a>
+
+              <a class="btn btn-favourite btn-outline-info" id="add-to-favourites">
+                  <div>
+                  {% if is_liked_by_user %}
+                  <i class="fa-solid fa-heart fa-lg" id="like-icon"></i>
+                  {% else %}
+                  <i class="fa-regular fa-heart fa-lg" id="like-icon"></i>
+                  {% endif %}
+                  </div>
+              </a>
               </div>
           </div>
           </div>
@@ -68,3 +77,7 @@
 </div>
 
 {% endblock body %}
+
+{% block script %}
+    <script src="{% static 'hh/job_posting.js' %}"></script>
+{% endblock %}
