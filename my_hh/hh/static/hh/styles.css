@@ -182,3 +182,26 @@ input[type="checkbox"] {
     padding: 20px;
     font-size: 16px;
 }
+
+
+/* Search page */
+.search-main-block {
+
+}
+
+.search-form-block {
+    font-size: 110%;
+}
+
+.job-search-result-block {
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 12px #edeff0;
+    border-left: 3px solid #f9d157;
+}
+
+.job-search-result-title {
+    color: #3c9df2;
+    text-decoration: none;
+    font-size: 18px;
+}

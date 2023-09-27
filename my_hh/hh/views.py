@@ -105,6 +105,38 @@ def like_job_posting(request, job_posting_uuid):
 
 
 @login_required
+def favourite_job_postings(request):
+    #Only job seekers can see this page
+    if request.user.is_employer:
+        raise PermissionDenied()
+    favourite_jobs = JobPosting.objects.filter(liked=request.user)
+    context = {'favourite_jobs': favourite_jobs}
+    return render(request, "hh/favourite_job_postings.html", context)
+
+
+@login_required
+def search_for_jobs(request):
+    #This page is only for job seekers
+    if request.user.is_employer:
+        raise PermissionDenied()
+    context = {'title': 'Search results:', 'countries': JobPosting.COUNTRY_CHOICES}
+
+    # Search results
+    if request.method == 'POST':
+        searched = request.POST['search-bar-main']
+        context['title'] = f'Search results: {str(searched)}'
+        if searched:
+            jobs = JobPosting.objects.filter(title__icontains=searched).order_by("-job_open_date")
+            context.update({'jobs': jobs})
+        else:
+            jobs = JobPosting.objects.all().order_by("-job_open_date")
+            context.update({'jobs': jobs})
+        return render(request, 'hh/search_for_jobs.html', context)
+    else:
+        return render(request, 'hh/search_for_jobs.html', context)
+
+
+@login_required
 def create_job_posting_view(request):
 
     # Only an employer account allowed on the page

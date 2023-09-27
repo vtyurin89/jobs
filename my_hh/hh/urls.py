@@ -9,5 +9,7 @@ urlpatterns = [
     path("account/create_job_posting/", views.create_job_posting_view, name='create_job_posting'),
     path("job_posting/<uuid:job_posting_uuid>/", views.job_posting_view, name="job_posting"),
     path('favourite/<uuid:job_posting_uuid>', views.like_job_posting, name='like_job_posting'),
+    path('account/favourite_job_postings', views.favourite_job_postings, name='favourite_job_postings'),
+    path('account/search_for_jobs', views.search_for_jobs, name='search_for_jobs'),
     ]
 

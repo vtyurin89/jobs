@@ -39,8 +39,9 @@
 
                 <!-- Index page search bar -->
         <div class="index-search-bar-div">
-        <form class="d-flex w-100 mt-5">
-        <input class="form-control me-2" type="search" placeholder="Find position or a company..." aria-label="Search">
+        <form class="d-flex w-100 mt-5" role="search" method="post" action="{% url 'search_for_jobs' %}">
+            {% csrf_token %}
+        <input class="form-control me-2" type="search" placeholder="Find that perfect job..." aria-label="Search" name="search-bar-main">
         <button class="btn btn-outline-primary" type="submit">Search</button>
         </form>
         </div>

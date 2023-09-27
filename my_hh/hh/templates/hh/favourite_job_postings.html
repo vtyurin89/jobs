@@ -1,0 +1,15 @@
+{% extends "hh/layout.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Selected job postings{% endblock %}
+
+{% block body %}
+
+My favourite jobs
+
+{% for job in favourite_jobs %}
+<p>{{ job }}</p>
+{% endfor %}
+
+{% endblock body %}

@@ -1,0 +1,141 @@
+{% extends "hh/layout.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+    <div class="container main-search-block">
+    <!-- Search bar -->
+    <div class="index-search-bar-div">
+    <form class="d-flex w-100 mt-5" role="search" method="post" action="{% url 'search_for_jobs' %}">
+        {% csrf_token %}
+    <input class="form-control me-2" type="search" placeholder="Find that perfect job..." aria-label="Search" name="search-bar-main">
+    <button class="btn btn-outline-primary" type="submit">Search</button>
+    </form>
+    </div>
+
+    <hr class="mt-5">
+
+    <h5>We found {{ jobs.count }} job postings</h5>
+
+    <hr class="mt-5">
+    <!-- Main block with sidebar -->
+
+    <div class="container p-0">
+        <div class="search-main-block">
+            <div class="row row-cols-1 row-cols-md-2 g-5">
+
+        <!-- Sidebar -->
+            <div class="col-lg-3">
+                <div class="search-form-block">
+                    <form method="post">
+                        <p class="mb-0"><b>Job type</b></p>
+                        <div class="form-check mt-3">
+                          <input class="form-check-input me-3" type="checkbox" value="" id="part_time_checkbox">
+                          <label class="form-check-label" for="part_time_checkbox">
+                            Part-time
+                          </label>
+                        </div>
+                        <div class="form-check mt-1">
+                          <input class="form-check-input me-3" type="checkbox" value="" id="remote_checkbox">
+                          <label class="form-check-label" for="remote_checkbox">
+                            Remote
+                          </label>
+                        </div>
+
+                        <div class="mt-5">
+                            <label for="exclude_words" class="form-label"><b>Exclude words</b></label>
+                        <input type="text" class="form-control" name="exclude_words" id="exclude_words" aria-describedby="exclude-words">
+                        </div>
+
+                        <p class="mt-5 mb-1"><b>Salary level per month</b></p>
+                        <div class="form-check">
+                      <input class="form-check-input" type="radio" name="salaryRadio" id="salary_any" checked>
+                      <label class="form-check-label" for="salary_any">
+                        Any salary
+                      </label>
+                    </div>
+                        <div class="form-check">
+                      <input class="form-check-input" type="radio" name="salaryRadio" id="salary_40000">
+                      <label class="form-check-label" for="salary_40000">
+                        from 40 000 ₽
+                      </label>
+                        </div>
+                        <div class="form-check">
+                      <input class="form-check-input" type="radio" name="salaryRadio" id="salary_70000">
+                      <label class="form-check-label" for="salary_70000">
+                        from 70 000 ₽
+                      </label>
+                        </div>
+                        <div class="form-check">
+                      <input class="form-check-input" type="radio" name="salaryRadio" id="salary_150000">
+                      <label class="form-check-label" for="salary_150000">
+                        from 150 000 ₽
+                      </label>
+                        </div>
+                      <div class="form-check">
+                      <input class="form-check-input" type="radio" name="salaryRadio" id="salary_300000">
+                      <label class="form-check-label" for="salary_300000">
+                        from 300 000 ₽
+                      </label>
+                        </div>
+
+                        <div class="mt-5">
+                            <label for="country" class="form-label"><b>Country</b></label>
+                        <select class="form-select" aria-label="Default select example" id="country">
+                          <option selected value="None">Select country</option>
+                           {% for country in countries %}
+                           <option value="{{ country.1 }}">{{ country.1 }}</option>
+                            {% endfor %}
+                        </select>
+                        </div>
+
+
+
+                    </form>
+                </div>
+            </div>
+
+        <!-- Search results -->
+            <div class="col-lg-9">
+
+
+            {% for job in jobs %}
+                <!-- Search result block -->
+                <div class="job-search-result-block">
+                    <a class="job-search-result-title" href="{{ job.get_absolute_url }}"><b>{{ job.title }}</b></a>
+
+                    <!-- Salary in search result -->
+                    {% if job.min_salary and job.max_salary %}
+                    <h4 class="mt-3"><b>{{ job.min_salary.normalize | intcomma }} - {{ job.max_salary.normalize | intcomma }} ₽</b></h4>
+                    {% elif job.min_salary %}
+                    <h4 class="mt-3"><b>From {{ job.min_salary.normalize | intcomma }} ₽</b></h4>
+                    {% elif job.max_salary %}
+                    <h4 class="mt-3"><b>To {{ job.max_salary.normalize | intcomma }} ₽</b></h4>
+                    {% endif %}
+
+                    {% if job.employer.employerprofile.company_name %}
+                    <div>{{ job.city }}, {{ job.employer.employerprofile.company_name }}</div>
+                    {% else %}
+                    <div>{{ job.city }}</div>
+                    {% endif %}
+
+                    {% if job.is_remote %}
+                    <p class="mt-3">Work from home</p>
+                    {% endif %}
+
+                    {% if job.is_part_time %}
+                    <p class="mt-3">Part-time</p>
+                    {% endif %}
+
+                    <a class="btn btn-info mt-3">Respond</a>
+                </div>
+            {% endfor %}
+
+            </div>
+        </div>
+    </div>
+
+    </div>
+{% endblock body %}
