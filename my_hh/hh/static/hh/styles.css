@@ -3,6 +3,7 @@ body, html {
     background: #fff;
 }
 
+
 body {
     color: #303233;
     font-family: Arial,Helvetica Neue,sans-serif;
@@ -185,8 +186,13 @@ input[type="checkbox"] {
 
 
 /* Search page */
-.search-main-block {
 
+.main-search-block {
+    padding-bottom: 20px;
+}
+
+.btn-search {
+    max-height: 100px;
 }
 
 .search-form-block {

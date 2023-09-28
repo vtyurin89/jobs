@@ -12,7 +12,7 @@ import json
 
 from .models import *
 from .forms import *
-
+from .utils import country_name_by_ISO_3166_1_alpha_2_code
 
 def index(request):
     context = {}
@@ -119,14 +119,24 @@ def search_for_jobs(request):
     #This page is only for job seekers
     if request.user.is_employer:
         raise PermissionDenied()
-    context = {'title': 'Search results:', 'countries': JobPosting.COUNTRY_CHOICES}
+    context = {'title': 'Search results:', 'countries': JobPosting.COUNTRY_CHOICES, 'industries': Industry.objects.all()}
 
     # Search results
     if request.method == 'POST':
-        searched = request.POST['search-bar-main']
-        context['title'] = f'Search results: {str(searched)}'
-        if searched:
-            jobs = JobPosting.objects.filter(title__icontains=searched).order_by("-job_open_date")
+        print(request.POST)
+        search_bar = request.POST.get('search-bar-main', None)
+        context['title'] = f'Search results: {str(search_bar)}'
+
+        #time to construct the filter
+        filter_kwargs = {
+            'title': f"title__icontains={search_bar}",
+        }
+        my_filters = {key: value for key, value in filter_kwargs.items()}
+
+        print(*filter_kwargs.values())
+        if search_bar:
+            jobs = JobPosting.objects.all().filter(**filter_kwargs).order_by("-job_open_date")
+            country = country_name_by_ISO_3166_1_alpha_2_code(request.POST['country'])
             context.update({'jobs': jobs})
         else:
             jobs = JobPosting.objects.all().order_by("-job_open_date")
