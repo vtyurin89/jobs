@@ -31,3 +31,7 @@ def salary_radio_results(salaryRadio):
     }
     return salary_dict.get(salaryRadio, None)
 
+
+def pipi(popo):
+    return None
+

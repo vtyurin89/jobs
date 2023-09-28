@@ -12,7 +12,7 @@ import json
 
 from .models import *
 from .forms import *
-from .utils import country_name_by_ISO_3166_1_alpha_2_code
+from .utils import country_name_by_ISO_3166_1_alpha_2_code, salary_radio_results
 
 def index(request):
     context = {}
@@ -119,24 +119,38 @@ def search_for_jobs(request):
     #This page is only for job seekers
     if request.user.is_employer:
         raise PermissionDenied()
-    context = {'title': 'Search results:', 'countries': JobPosting.COUNTRY_CHOICES, 'industries': Industry.objects.all()}
+    context = {'title': 'Search results:',
+               'countries': JobPosting.COUNTRY_CHOICES,
+               'industries': Industry.objects.all()
+               }
 
     # Search results
     if request.method == 'POST':
         print(request.POST)
         search_bar = request.POST.get('search-bar-main', None)
-        context['title'] = f'Search results: {str(search_bar)}'
+        context['title'] = 'Search results'
 
         #time to construct the filter
-        filter_kwargs = {
-            'title': f"title__icontains={search_bar}",
-        }
-        my_filters = {key: value for key, value in filter_kwargs.items()}
+        filter_list = ['search_bar', 'part_time', 'remote', 'country', 'city', 'industry', 'salaryRadio']
 
-        print(*filter_kwargs.values())
+        #need to add exclude
+
+        filter_dict = {'search_bar': ('title__icontains', request.POST.get('search_bar', None)),
+                        'part_time': ('is_part_time', True),
+                       'remote': ('is_remote', True),
+                       'country': ('country', country_name_by_ISO_3166_1_alpha_2_code(request.POST.get('country', None))),
+                       'city': ('city', request.POST.get('city', None)),
+                       'industry': ('industry', Industry.objects.filter(title=request.POST.get('industry', None)).first()),
+                       'salaryRadio': ('min_salary__gte', salary_radio_results(request.POST.get('salaryRadio', None))),
+        }
+        filtered_kwargs = { filter_dict[custom_filter][0] : filter_dict[custom_filter][1]
+                            for custom_filter in filter_list if request.POST.get(custom_filter, None) }
+        print(filtered_kwargs)
+
+
         if search_bar:
-            jobs = JobPosting.objects.all().filter(**filter_kwargs).order_by("-job_open_date")
-            country = country_name_by_ISO_3166_1_alpha_2_code(request.POST['country'])
+            jobs = JobPosting.objects.all().filter().order_by("-job_open_date")
+            # country = country_name_by_ISO_3166_1_alpha_2_code(request.POST['country'])
             context.update({'jobs': jobs})
         else:
             jobs = JobPosting.objects.all().order_by("-job_open_date")

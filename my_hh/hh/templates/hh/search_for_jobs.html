@@ -12,7 +12,7 @@
     <div class="index-search-bar-div d-flex">
     <div class="d-flex w-100 mt-5">
         {% csrf_token %}
-    <input class="form-control me-2" type="search" placeholder="Find that perfect job..." aria-label="Search" name="search-bar-main">
+    <input class="form-control me-2" type="search" placeholder="Find that perfect job..." aria-label="Search" name="search_bar">
 
         <button class=" btn btn-outline-primary" type="submit">Search</button>
     </div>
@@ -37,13 +37,13 @@
 
                         <p class="mb-0"><b>Job type</b></p>
                         <div class="form-check mt-3">
-                          <input class="form-check-input me-3" type="checkbox" name="part_time" value="" id="part_time_checkbox">
+                          <input class="form-check-input me-3" type="checkbox" name="part_time" value="part-time" id="part_time_checkbox">
                           <label class="form-check-label" for="part_time_checkbox">
                             Part-time
                           </label>
                         </div>
                         <div class="form-check mt-1">
-                          <input class="form-check-input me-3" type="checkbox" name="remote" value="" id="remote_checkbox">
+                          <input class="form-check-input me-3" type="checkbox" name="remote" value="remote" id="remote_checkbox">
                           <label class="form-check-label" for="remote_checkbox">
                             Remote
                           </label>
