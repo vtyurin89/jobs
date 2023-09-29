@@ -211,3 +211,12 @@ input[type="checkbox"] {
     text-decoration: none;
     font-size: 18px;
 }
+
+.btn-results-favourite {
+    height: 38px;
+    width: 38px;
+    margin-left: 10px;
+    padding-top: 18px;
+    padding-right: 25px;
+    padding-left: 8px;
+}

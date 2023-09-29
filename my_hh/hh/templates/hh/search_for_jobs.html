@@ -146,7 +146,18 @@
                     <p class="mt-3">Part-time</p>
                     {% endif %}
 
+                    <div>
                     <a class="btn btn-info mt-3">Respond</a>
+
+                        <a class="btn btn-results-favourite btn-outline-info mt-3" id="add-to-favourites">
+                        {% if job.is_liked %}
+                        <i class="fa-solid fa-heart fa-lg" id="like-icon"></i>
+                        {% else %}
+                        <i class="fa-regular fa-heart fa-lg" id="like-icon"></i>
+                        {% endif %}
+                        </a>
+
+                    </div>
                 </div>
             {% endfor %}
 

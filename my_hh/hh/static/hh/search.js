@@ -10,7 +10,6 @@ var config = {
 // Main function starts after the DOM was loaded
 document.addEventListener('DOMContentLoaded', function() {
 
-    console.log('DOM loaded');
 
     // City dropdown thing was not part of the django form, so add it now
     addDropdown();
@@ -119,17 +118,4 @@ function clickButtonToChooseCity(e) {
 }
 
 
-function submitAdditionalData() {
-//    form1 = document.getElementById('search-bar');
-//    form2 = document.getElementById('additional-info');
-    var
-	data = new FormData($('#search-bar')[0]),
-	form_2 	= $('#additional-info').serializeArray();
-	form_2.forEach(function(fields){
-	data.append(fields.name, fields.value);
-});
-console.log(form_2);
 
-
-
-}

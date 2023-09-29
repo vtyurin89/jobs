@@ -58,7 +58,7 @@ class JobPosting(models.Model):
     min_salary = models.DecimalField(max_digits=10, decimal_places=2)
     max_salary = models.DecimalField(max_digits=10, decimal_places=2)
     visible = models.BooleanField(default=True)
-    liked = models.ManyToManyField('User', blank=True, related_name='liked_post')
+    liked = models.ManyToManyField('User', blank=True, related_name='liked_posting')
 
     def __str__(self):
         return self.title

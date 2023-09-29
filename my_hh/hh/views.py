@@ -1,6 +1,6 @@
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
+from django.db.models import Count, Exists, OuterRef
 from django.http import HttpResponseRedirect, Http404, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -12,7 +12,7 @@ import json
 
 from .models import *
 from .forms import *
-from .utils import country_name_by_ISO_3166_1_alpha_2_code, salary_radio_results
+from .utils import salary_radio_value, get_filter_kwargs
 
 def index(request):
     context = {}
@@ -29,12 +29,19 @@ def index(request):
         elif not request.user.is_employer:
             # job seeker has a city
             if request.user.jobseekerprofile.preferred_location:
-                jobs_in_location = JobPosting.objects.filter(country=request.user.jobseekerprofile.preferred_country,
-                                                             city=request.user.jobseekerprofile.preferred_location).order_by(
-                                                                "-job_open_date").select_related('industry')[:12]
-                industries_gt0_in_location = Industry.objects.annotate(cnt_jobpostings=Count('jobposting')).filter(
-                                                cnt_jobpostings__gt=0, jobposting__country=request.user.jobseekerprofile.preferred_country,
-                                                jobposting__city=request.user.jobseekerprofile.preferred_location)
+                jobs_in_location = JobPosting.objects.filter(
+                        country=request.user.jobseekerprofile.preferred_country,
+                        city=request.user.jobseekerprofile.preferred_location
+                        ).order_by(
+                        "-job_open_date"
+                        ).select_related('industry')[:12]
+                industries_gt0_in_location = Industry.objects.annotate(
+                        cnt_jobpostings=Count('jobposting')
+                        ).filter(
+                        cnt_jobpostings__gt=0,
+                        jobposting__country=request.user.jobseekerprofile.preferred_country,
+                        jobposting__city=request.user.jobseekerprofile.preferred_location
+                        )
                 if jobs_in_location:
                     context.update({'jobs_in_location': jobs_in_location})
                 if industries_gt0_in_location:
@@ -43,8 +50,11 @@ def index(request):
             elif not request.user.jobseekerprofile.preferred_location:
                 jobs_in_location = JobPosting.objects.all().order_by(
                                     "-job_open_date").select_related('industry')[:12]
-                industries_gt0_in_location = Industry.objects.annotate(cnt_jobpostings=Count('jobposting')).filter(
-                                                cnt_jobpostings__gt=0)
+                industries_gt0_in_location = Industry.objects.annotate(
+                        cnt_jobpostings=Count('jobposting')
+                        ).filter(
+                        cnt_jobpostings__gt=0
+                        )
                 if jobs_in_location:
                     context.update({'jobs_in_location': jobs_in_location})
                 if industries_gt0_in_location:
@@ -121,40 +131,38 @@ def search_for_jobs(request):
         raise PermissionDenied()
     context = {'title': 'Search results:',
                'countries': JobPosting.COUNTRY_CHOICES,
-               'industries': Industry.objects.all()
+               'industries': Industry.objects.all(),
                }
 
     # Search results
     if request.method == 'POST':
-        print(request.POST)
-        search_bar = request.POST.get('search-bar-main', None)
         context['title'] = 'Search results'
 
         #time to construct the filter
         filter_list = ['search_bar', 'part_time', 'remote', 'country', 'city', 'industry', 'salaryRadio']
+        filter_kwargs = get_filter_kwargs(request, filter_list)
+        excluded_words_in_query = request.POST.get('exclude_words', None)
 
-        #need to add exclude
-
-        filter_dict = {'search_bar': ('title__icontains', request.POST.get('search_bar', None)),
-                        'part_time': ('is_part_time', True),
-                       'remote': ('is_remote', True),
-                       'country': ('country', country_name_by_ISO_3166_1_alpha_2_code(request.POST.get('country', None))),
-                       'city': ('city', request.POST.get('city', None)),
-                       'industry': ('industry', Industry.objects.filter(title=request.POST.get('industry', None)).first()),
-                       'salaryRadio': ('min_salary__gte', salary_radio_results(request.POST.get('salaryRadio', None))),
-        }
-        filtered_kwargs = { filter_dict[custom_filter][0] : filter_dict[custom_filter][1]
-                            for custom_filter in filter_list if request.POST.get(custom_filter, None) }
-        print(filtered_kwargs)
-
-
-        if search_bar:
-            jobs = JobPosting.objects.all().filter().order_by("-job_open_date")
-            # country = country_name_by_ISO_3166_1_alpha_2_code(request.POST['country'])
-            context.update({'jobs': jobs})
+        if excluded_words_in_query:
+            jobs = JobPosting.objects.annotate(
+                is_liked=Exists(
+                    JobPosting.liked.through.objects.filter(
+                        jobposting_id=OuterRef('pk'), user=request.user
+                    )
+                )
+            ).filter(**filter_kwargs).exclude(
+                title__icontains=excluded_words_in_query
+            ).order_by("-job_open_date")
         else:
-            jobs = JobPosting.objects.all().order_by("-job_open_date")
-            context.update({'jobs': jobs})
+            jobs = JobPosting.objects.annotate(
+                is_liked=Exists(
+                    JobPosting.liked.through.objects.filter(
+                        jobposting_id=OuterRef('pk'), user=request.user
+                    )
+                )
+            ).filter(**filter_kwargs).order_by("-job_open_date")
+
+        context.update({'jobs': jobs})
         return render(request, 'hh/search_for_jobs.html', context)
     else:
         return render(request, 'hh/search_for_jobs.html', context)
