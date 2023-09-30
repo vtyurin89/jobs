@@ -119,7 +119,7 @@ def favourite_job_postings(request):
     #Only job seekers can see this page
     if request.user.is_employer:
         raise PermissionDenied()
-    favourite_jobs = JobPosting.objects.filter(liked=request.user)
+    favourite_jobs = JobPosting.objects.filter(liked=request.user).order_by('-job_open_date')
     context = {'favourite_jobs': favourite_jobs}
     return render(request, "hh/favourite_job_postings.html", context)
 
@@ -188,6 +188,15 @@ def create_job_posting_view(request):
                 messages.error(request, error)
     context = {'form': form}
     return render(request, "hh/create_job_posting.html", context)
+
+
+@login_required
+def create_resume_view(request):
+    #This page is only for job seekers
+    if request.user.is_employer:
+        raise PermissionDenied()
+    context = {}
+    return render(request, "hh/create_resume.html", context)
 
 
 def login_view(request):

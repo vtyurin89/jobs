@@ -1,16 +1,17 @@
 
 
-
-// Main function starts after the DOM was loaded
 document.addEventListener('DOMContentLoaded', function() {
-    const likeButton = document.getElementById('add-to-favourites');
-    likeButton.addEventListener('click', () => likeButtonPressed(likeButton));
-})
+
+    // Add post to favourites
+    const likeButtons = document.querySelectorAll('[id^="add-to-fav-"]');
+    likeButtons.forEach(likeButton => likeButton.addEventListener('click', () => addToFavourite(likeButton)));
+});
 
 
-function likeButtonPressed(likeButton) {
+function addToFavourite(likeButton) {
+    var job_posting_uuid = likeButton.id.split('add-to-fav-')[1];
     var icon = likeButton.querySelector('#like-icon');
-    var job_posting_uuid = window.location.href.split('/').slice(-2)[0];
+    console.log(icon);
     fetch(`/favourite/${job_posting_uuid}`, {
         method: "PUT",
         headers: {"Content-type": "application/json", "X-CSRFToken": getTokenFromCookie('csrftoken')},

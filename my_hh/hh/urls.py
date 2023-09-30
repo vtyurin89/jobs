@@ -11,5 +11,6 @@ urlpatterns = [
     path('favourite/<uuid:job_posting_uuid>', views.like_job_posting, name='like_job_posting'),
     path('account/favourite_job_postings', views.favourite_job_postings, name='favourite_job_postings'),
     path('account/search_for_jobs', views.search_for_jobs, name='search_for_jobs'),
+    path('account/create_resume', views.create_resume_view, name='create_resume'),
     ]
 

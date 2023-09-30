@@ -78,13 +78,6 @@ class Industry(models.Model):
 
 
 class JobSeekerProfile(models.Model):
-    GENDER_CHOICES = (
-        ('P', 'Prefer not to say'),
-        ('M', 'Male'),
-        ('F', 'Female'),
-        ('U', 'Unspecified'),
-    )
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='U')
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.URLField(null=True, blank=True, verbose_name='Profile image')
     phone_number = PhoneNumberField(null=True, blank=True)
@@ -106,6 +99,42 @@ class EmployerProfile(models.Model):
 
     def __str__(self):
         return f'{self.user}_profile'
+
+
+class Resume(models.Model):
+    user = models.ForeignKey('User', on_delete=models.CASCADE)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=200)
+
+    def __str__(self):
+        return f'Resume: {self.title}'
+
+
+class ResumeMainInfo(models.Model):
+    resume = models.OneToOneField('Resume', on_delete=models.CASCADE)
+    first_name = models.CharField(blank=True, max_length=150)
+    last_name = models.CharField(blank=True, max_length=150)
+    preferred_country = models.CharField(max_length=100, null=True, blank=True)
+    preferred_location = models.CharField(max_length=100, null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    phone_number = PhoneNumberField(null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.resume} main info'
+
+
+class ResumeEducationBlock(models.Model):
+    resume = models.ForeignKey('Resume', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.resume} education'
+
+
+class ResumeIndustry(models.Model):
+    resume = models.OneToOneField('Resume', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.resume} industry'
 
 
 
