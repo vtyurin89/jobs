@@ -195,7 +195,15 @@ def create_resume_view(request):
     #This page is only for job seekers
     if request.user.is_employer:
         raise PermissionDenied()
-    context = {}
+
+    form_1 = CreateResumeForm(request.POST or None)
+    if request.method == 'POST':
+        form_1 = CreateResumeForm(request.POST, user=request.user)
+        if form_1.is_valid():
+            form_1.save(commit=False)
+            print('Form 1:', form_1.cleaned_data)
+
+    context = {'form_1': form_1}
     return render(request, "hh/create_resume.html", context)
 
 
@@ -265,7 +273,6 @@ def register_view(request):
                 image=request.POST.get('photo', None),
                 telegram_ID=request.POST.get('telegram_ID', None),
                 phone_number=request.POST.get('phone_number', None),
-                gender=request.POST.get('gender', None),
                 preferred_country=request.POST.get('country', None),
                 preferred_location=request.POST.get('city', None),
             )

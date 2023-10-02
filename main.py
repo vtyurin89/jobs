@@ -1,6 +1,5 @@
-n = int(input("Введите n:"))
-m = int(input("Введите m:"))
-c2 = int(input("Введите c2:"))
-c5 = int(input("Введите c5:"))
+class Node:
+    def __init__(self, next=None):
+        self.next = next
 
-greedy_effective
+newnode = Node()

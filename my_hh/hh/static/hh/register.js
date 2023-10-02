@@ -208,12 +208,6 @@ function load_job_seeker_form(){
             <label for="first_name" class="form-label">Personal information</label>
             <input class="form-control mt-1" type="text" name="first_name" id="first_name" placeholder="First Name *" required>
             <input class="form-control mt-1" type="text" name="last_name" placeholder="Last Name *" required>
-        <select class="form-select mt-1" id="gender-select" name='gender'>
-          <option selected value="P">Gender</option>
-          <option value="M">Male</option>
-          <option value="F">Female</option>
-          <option value="U">Unspecified</option>
-        </select>
         </div>
 
         <div class="form-group mt-5">

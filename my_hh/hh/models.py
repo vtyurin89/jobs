@@ -105,13 +105,6 @@ class Resume(models.Model):
     user = models.ForeignKey('User', on_delete=models.CASCADE)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200)
-
-    def __str__(self):
-        return f'Resume: {self.title}'
-
-
-class ResumeMainInfo(models.Model):
-    resume = models.OneToOneField('Resume', on_delete=models.CASCADE)
     first_name = models.CharField(blank=True, max_length=150)
     last_name = models.CharField(blank=True, max_length=150)
     preferred_country = models.CharField(max_length=100, null=True, blank=True)
@@ -120,18 +113,27 @@ class ResumeMainInfo(models.Model):
     phone_number = PhoneNumberField(null=True, blank=True)
 
     def __str__(self):
-        return f'{self.resume} main info'
+        return f'Resume: {self.title}'
 
 
 class ResumeEducationBlock(models.Model):
     resume = models.ForeignKey('Resume', on_delete=models.CASCADE)
+    educational_institution = models.CharField(max_length=200, null=True, blank=True)
+    specialization = models.CharField(max_length=200, null=True, blank=True)
+    year_of_graduation = models.DateField(null=True, blank=True)
 
     def __str__(self):
-        return f'{self.resume} education'
+        return f'{self.resume} education: {self.educational_institution}'
 
 
 class ResumeIndustry(models.Model):
     resume = models.OneToOneField('Resume', on_delete=models.CASCADE)
+    employer = models.CharField(max_length=150, null=True, blank=True)
+    industry = models.ForeignKey('Industry', on_delete=models.PROTECT)
+    posiion = models.CharField(max_length=150, null=True, blank=True)
+    employment_began = models.DateField(blank=True, null=True)
+    employment_ended = models.DateField(blank=True, null=True)
+    job_duties = models.CharField(max_length=1000, null=True, blank=True)
 
     def __str__(self):
         return f'{self.resume} industry'

@@ -6,7 +6,7 @@ class UserAdmin(admin.ModelAdmin):
 
 
 class JobSeekerProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'gender', 'image', )
+    list_display = ('user',  'image', )
 
 
 class EmployerProfileAdmin(admin.ModelAdmin):

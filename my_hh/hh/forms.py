@@ -1,6 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm, ModelChoiceField
+from phonenumber_field.widgets import RegionalPhoneNumberWidget
+from phonenumber_field.modelfields import PhoneNumberField
 
 from .models import *
 
@@ -48,3 +50,30 @@ class CreateJobPostingForm(ModelForm):
         if commit:
             my_form_object.save()
         return my_form_object
+
+
+class CreateResumeForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)
+        super(CreateResumeForm, self).__init__(*args, **kwargs)
+
+    title = forms.CharField(label='Title', max_length=250, required=True,
+                            widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'title'}))
+    first_name = forms.CharField(label='First Name', max_length=150, required=True,
+                            widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'first_name'}))
+    last_name = forms.CharField(label='First Name', max_length=150, required=True,
+                            widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'first_name'}))
+    preferred_country = forms.ChoiceField(label='Country', required=True, choices=JobPosting.COUNTRY_CHOICES,
+                                 widget=forms.Select(attrs={'class': 'form-select', 'name': 'country', 'id': 'country'}))
+    preferred_location = forms.CharField(label='City', required=True,
+                                 widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'city', 'id': 'city'}))
+    date_of_birth = forms.DateField(label='Date of birth', required=True,
+                                widget=forms.DateInput(attrs={'class': 'form-control', 'name': 'date_of_birth', 'type': "date"}))
+    phone_number = PhoneNumberField()
+
+    class Meta:
+        model = Resume
+        fields = ["title", 'first_name', 'last_name', 'preferred_country', 'preferred_location', 'date_of_birth', 'phone_number']
+        widgets = {
+            "phone_number": RegionalPhoneNumberWidget(attrs={'class': 'form-control', 'name': 'phone_number'}),
+        }
