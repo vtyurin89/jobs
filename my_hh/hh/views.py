@@ -191,7 +191,7 @@ def create_job_posting_view(request):
 
 
 @login_required
-def create_resume_view(request):
+def create_resume_main_view(request):
     #This page is only for job seekers
     if request.user.is_employer:
         raise PermissionDenied()
@@ -200,11 +200,38 @@ def create_resume_view(request):
     if request.method == 'POST':
         form_1 = CreateResumeForm(request.POST, user=request.user)
         if form_1.is_valid():
-            form_1.save(commit=False)
-            print('Form 1:', form_1.cleaned_data)
-
+            new_resume = form_1.save()
+            return redirect(reverse('create_resume_education', kwargs={'resume_uuid': new_resume.id}))
     context = {'form_1': form_1}
-    return render(request, "hh/create_resume.html", context)
+    return render(request, "hh/create_resume_main.html", context)
+
+
+@login_required
+def create_resume_education_view(request, resume_uuid):
+    if request.user.is_employer:
+        raise PermissionDenied()
+    context = {}
+    return render(request, "hh/create_resume_education.html", context)
+
+
+@login_required
+def my_resumes_view(request):
+    if request.user.is_employer:
+        raise PermissionDenied()
+    my_resumes = Resume.objects.filter(user=request.user)
+    context = {'my_resumes': my_resumes}
+    return render(request, "hh/my_resumes.html", context)
+
+
+@login_required
+def resume_view(request, resume_uuid):
+    context = {}
+    try:
+        resume = Resume.objects.annotate().get(id=resume_uuid)
+    except ObjectDoesNotExist:
+        raise Http404()
+    context.update({'resume': resume})
+    return render(request, "hh/resume.html", context)
 
 
 def login_view(request):

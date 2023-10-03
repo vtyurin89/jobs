@@ -26,8 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Dynamic search for cities
     cityInput.addEventListener("input", () => dynamicInputChange(cityInput));
 
-    // Education => add one more place of study
-    document.getElementById('btn_study_add').addEventListener('click', () => AddStudyPlace(event));
+
 
 })
 
@@ -128,23 +127,3 @@ function getTokenFromCookie(token) {
 }
 
 
-// Add one more place of study
-function AddStudyPlace(event) {
-    event.preventDefault();
-    var previousJobMainDiv = document.getElementById('resume_education_block');
-    var newFormElement =  `
-        <p>
-        <label for="educational_institution" class="form-label"> Educational institution: </label>
-        <input type="text" name="educational_institution" class="form-control" maxlength="200" required="" id="educational_institution">
-        </p>
-        <p>
-        <label for="specialization" class="form-label"> Specialization: </label>
-        <input type="text" name="specialization" class="form-control" maxlength="200" required="" id="specialization">
-        </p>
-        <p>
-        <label for="year_of_graduation" class="form-label"> Year of graduation: </label>
-        <input type="date" name="year_of_graduation" class="form-control" required="" id="year_of_graduation">
-        </p>
-    `
-    previousJobMainDiv.append(newFormElement);
-}

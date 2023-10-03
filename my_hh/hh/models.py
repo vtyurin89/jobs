@@ -115,6 +115,9 @@ class Resume(models.Model):
     def __str__(self):
         return f'Resume: {self.title}'
 
+    def get_absolute_url(self):
+        return reverse('resume', kwargs={'resume_uuid': self.id})
+
 
 class ResumeEducationBlock(models.Model):
     resume = models.ForeignKey('Resume', on_delete=models.CASCADE)

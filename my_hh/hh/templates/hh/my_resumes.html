@@ -1,0 +1,28 @@
+{% extends "hh/layout.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}My resumes{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <h3 class="mt-5">My resumes</h3>
+    <div class="container mt-5">
+    {% for resume in my_resumes %}
+        <div class="resume-list-block">
+                    <a class="job-search-result-title" href="{{ resume.get_absolute_url }}"><b>{{ resume.title }}</b></a>
+        <div class="d-flex flex-row mt-3">
+            <a href="#" class="resume-link">Edit</a>
+            <a href="" class="resume-link ms-3">Delete</a>
+
+
+        </div>
+
+        </div>
+    {% endfor %}
+
+    </div>
+</div>
+
+{% endblock body %}

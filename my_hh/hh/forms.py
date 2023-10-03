@@ -77,3 +77,10 @@ class CreateResumeForm(ModelForm):
         widgets = {
             "phone_number": RegionalPhoneNumberWidget(attrs={'class': 'form-control', 'name': 'phone_number'}),
         }
+
+    def save(self, commit=True, **kwargs):
+        my_form_object = super(CreateResumeForm, self).save(commit=False)
+        my_form_object.user = self.user
+        if commit:
+            my_form_object.save()
+        return my_form_object

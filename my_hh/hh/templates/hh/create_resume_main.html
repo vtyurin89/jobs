@@ -5,7 +5,7 @@
 
 {% block body %}
 
-       <!-- Form to create a new posting -->
+       <!-- Form to create a new resume -->
         <div class="container mt-5">
         <div class="row d-flex justify-content-center mt-5">
         <div class="col-md-12 col-lg-9 ps-3 pe-3">
@@ -20,32 +20,10 @@
         <div>{{ part.errors }}</div>
         {% endfor %}
 
-        <!-- Education block is here -->
-        <div class="container">
-        <h4 class="mt-5 mb-3">Education</h4>
-            <button type="button" class="btn btn-outline-primary" id="btn_study_add">
-                Specify one more place of study
-            </button>
-        <div class="mt-3"  id="resume_education_block">
-
-        </div>
-
-        </div>
-
-        <!-- Previous jobs block is here -->
-        <div class="container">
-        <h4 class="mt-5 mb-3">Work experience</h4>
-            <button type="button" class="btn btn-outline-primary">
-                Add an employer
-            </button>
-        <div  id="resume_previous_job_block">
-
-        </div>
-        </div>
 
         <!-- Submit button -->
       <div class="text-center mt-5">
-      <button type="submit" class="btn btn-primary btn-block mb-4">Submit</button>
+      <button type="submit" class="btn btn-primary btn-block mb-4">Save and contimue</button>
       </div>
 
       </form>
@@ -55,7 +33,7 @@
 {% endblock body %}
 
 {% block script %}
-    <script src="{% static 'hh/create_resume.js' %}"></script>
+    <script src="{% static 'hh/create_resume_main.js' %}"></script>
 {% endblock %}
 
 

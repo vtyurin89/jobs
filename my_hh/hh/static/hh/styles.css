@@ -220,3 +220,22 @@ input[type="checkbox"] {
     padding-right: 25px;
     padding-left: 8px;
 }
+
+
+/* Create resume */
+.education-block {
+    margin-top: 40px;
+}
+
+
+/* My resumes page */
+.resume-list-block {
+    padding: 20px;
+    margin-bottom: 22px;
+    box-shadow: 0 2px 12px rgba(48,50,51,.1);
+}
+
+.resume-link {
+    text-decoration: none;
+    color: #3c9df2;
+}
