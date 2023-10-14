@@ -63,16 +63,17 @@ function AddWorkPlace(event) {
     var newFormElement = document.createElement('div');
     newFormElement.innerHTML =
         `<p>
+        <input type="hidden" name="secret_id" value="123">
         <label for="organization" class="form-label"> Organization: </label>
-        <input type="text" name="organization" class="form-control" maxlength="200" required="" id="organization">
+        <input type="text" name="organization" class="form-control" maxlength="200" required id="organization">
         </p>
         <p>
         <label for="industry" class="form-label"> Job function: </label>
-        <input type="text" name="industry" class="form-control" maxlength="200" required="" id="industry">
+        <input type="text" name="industry" class="form-control" maxlength="200" required id="industry">
         </p>
         <p>
         <label for="position" class="form-label"> Position: </label>
-        <input type="text" name="position" class="form-control" maxlength="200" required="" id="position">
+        <input type="text" name="position" class="form-control" maxlength="200" required id="position">
         </p>
     `
     previousJobMainDiv.append(newFormElement);

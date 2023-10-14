@@ -235,6 +235,10 @@ input[type="checkbox"] {
     box-shadow: 0 2px 12px rgba(48,50,51,.1);
 }
 
+.divider {
+    min-height: 50px;
+}
+
 .resume-link {
     text-decoration: none;
     color: #3c9df2;

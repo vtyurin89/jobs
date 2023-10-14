@@ -118,9 +118,22 @@ class Resume(models.Model):
     def get_absolute_url(self):
         return reverse('resume', kwargs={'resume_uuid': self.id})
 
+    def country_name_by_ISO_3166_1_alpha_2_code(self):
+        country_dict = {
+            'RU': 'Russia',
+            'KZ': 'Kazakhstan',
+            'BY': 'Belarus',
+            'UZ': 'Uzbekistan',
+            'AZ': 'Azerbaijan',
+            'GE': 'Georgia',
+            'KG': 'Kyrgyzstan',
+        }
+        country = country_dict.get(self.preferred_country, None)
+        return country
+
 
 class ResumeEducationBlock(models.Model):
-    resume = models.ForeignKey('Resume', on_delete=models.CASCADE)
+    resume = models.ForeignKey('Resume', on_delete=models.CASCADE, related_name='education_blocks')
     educational_institution = models.CharField(max_length=200, null=True, blank=True)
     specialization = models.CharField(max_length=200, null=True, blank=True)
     year_of_graduation = models.DateField(null=True, blank=True)

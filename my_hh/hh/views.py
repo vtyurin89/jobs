@@ -12,7 +12,7 @@ import json
 
 from .models import *
 from .forms import *
-from .utils import salary_radio_value, get_filter_kwargs
+from .utils import salary_radio_value, get_filter_kwargs, calculate_age
 
 def index(request):
     context = {}
@@ -191,7 +191,7 @@ def create_job_posting_view(request):
 
 
 @login_required
-def create_resume_main_view(request):
+def create_resume_view(request):
     #This page is only for job seekers
     if request.user.is_employer:
         raise PermissionDenied()
@@ -201,17 +201,19 @@ def create_resume_main_view(request):
         form_1 = CreateResumeForm(request.POST, user=request.user)
         if form_1.is_valid():
             new_resume = form_1.save()
-            return redirect(reverse('create_resume_education', kwargs={'resume_uuid': new_resume.id}))
+            return HttpResponseRedirect(reverse("my_resumes"))
     context = {'form_1': form_1}
     return render(request, "hh/create_resume_main.html", context)
 
 
 @login_required
-def create_resume_education_view(request, resume_uuid):
+def edit_resume_education_view(request, resume_uuid):
     if request.user.is_employer:
         raise PermissionDenied()
+    if request.method == 'POST':
+        print(request.POST)
     context = {}
-    return render(request, "hh/create_resume_education.html", context)
+    return render(request, "hh/edit_resume_education.html", context)
 
 
 @login_required
@@ -227,10 +229,12 @@ def my_resumes_view(request):
 def resume_view(request, resume_uuid):
     context = {}
     try:
-        resume = Resume.objects.annotate().get(id=resume_uuid)
+        resume = Resume.objects.prefetch_related('education_blocks').get(id=resume_uuid)
     except ObjectDoesNotExist:
         raise Http404()
-    context.update({'resume': resume})
+    education_blocks = ResumeEducationBlock.objects.filter(resume=resume)
+    age = calculate_age(resume.date_of_birth)
+    context.update({'resume': resume, 'age': age, 'education_blocks': education_blocks})
     return render(request, "hh/resume.html", context)
 
 

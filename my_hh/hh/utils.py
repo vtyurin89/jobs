@@ -1,4 +1,4 @@
-from django.http import request
+from datetime import date
 from .models import Industry
 
 
@@ -53,3 +53,8 @@ def get_filter_kwargs(request, filter_list):
     filter_kwargs = {filter_dict[custom_filter][0]: filter_dict[custom_filter][1]
                      for custom_filter in filter_list if request.POST.get(custom_filter, None)}
     return filter_kwargs
+
+
+def calculate_age(date_of_birth):
+    today = date.today()
+    return today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
