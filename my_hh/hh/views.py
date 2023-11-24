@@ -210,9 +210,31 @@ def create_resume_view(request):
 def edit_resume_education_view(request, resume_uuid):
     if request.user.is_employer:
         raise PermissionDenied()
+    resume = Resume.objects.get(id=resume_uuid)
     if request.method == 'POST':
-        print(request.POST)
-    context = {}
+        post_dict = {}
+        for key in request.POST:
+            if key == 'csrfmiddlewaretoken':
+                pass
+            else:
+                key_name, key_id = key.split(':')
+                if key_id not in post_dict:
+                    post_dict[key_id] = {}
+                post_dict[key_id][key_name] = request.POST[key]
+        for edu_id in post_dict:
+            obj, created = ResumeEducationBlock.objects.update_or_create(
+                uuid=edu_id,
+                defaults={"resume": resume,
+                "educational_institution": post_dict[edu_id]['educational_institution'],
+                "specialization": post_dict[edu_id]['specialization'],
+                "year_of_graduation": post_dict[edu_id]['year_of_graduation']
+                          },
+            )
+        print(post_dict)
+        messages.success(request, "Resume updated")
+        return redirect(resume)
+    education_blocks = ResumeEducationBlock.objects.filter(resume=resume)
+    context = {'education_blocks': education_blocks}
     return render(request, "hh/edit_resume_education.html", context)
 
 

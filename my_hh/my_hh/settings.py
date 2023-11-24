@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'hh.apps.HhConfig',
     'phonenumber_field',
+    'phonenumbers',
     'bootstrap5',
     'django.contrib.humanize',
 ]

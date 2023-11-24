@@ -28,7 +28,7 @@
 
     <div class="divider"></div>
 
-    <!-- Contacts -->
+    <!-- Location -->
     <div>
     <h6>Location</h6>
     {% if resume.preferred_country and resume.preferred_location %}
@@ -45,7 +45,7 @@
         <h4 class="mt-3">Education</h4>
         <a href="{% url 'edit_resume_education' resume.id %}" class="resume-link">Edit</a>
         {% for education_block in education_blocks %}
-        {{ education_block }}
+        <p>{{ education_block }}</p>
         {% endfor %}
     </div>
 

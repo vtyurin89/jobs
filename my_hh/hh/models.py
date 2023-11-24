@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
@@ -133,10 +136,15 @@ class Resume(models.Model):
 
 
 class ResumeEducationBlock(models.Model):
+    uuid = models.CharField(max_length=20, null=True)
     resume = models.ForeignKey('Resume', on_delete=models.CASCADE, related_name='education_blocks')
     educational_institution = models.CharField(max_length=200, null=True, blank=True)
     specialization = models.CharField(max_length=200, null=True, blank=True)
-    year_of_graduation = models.DateField(null=True, blank=True)
+    year_of_graduation = models.PositiveIntegerField(
+            validators=[
+                MinValueValidator(1900),
+                MaxValueValidator(datetime.now().year)],
+            help_text="Please, use the following format: <YYYY>")
 
     def __str__(self):
         return f'{self.resume} education: {self.educational_institution}'

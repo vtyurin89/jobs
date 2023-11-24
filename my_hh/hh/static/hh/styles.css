@@ -227,6 +227,12 @@ input[type="checkbox"] {
     margin-top: 40px;
 }
 
+/* Edit resume education */
+.delete-xmark {
+    cursor: pointer;
+}
+
+
 
 /* My resumes page */
 .resume-list-block {

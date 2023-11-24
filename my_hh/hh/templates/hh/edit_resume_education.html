@@ -16,12 +16,32 @@
     {% csrf_token %}
 
     <!-- Education block is here -->
-    <div class="container p-0">
-    <h4 class="mt-5 mb-3">Education</h4>
-        <button type="button" class="btn btn-outline-primary" id="btn_study_add">
+    <div class="container p-0 mt-5">
+        <button type="button" class="btn btn-outline-primary " id="btn_study_add">
             Specify one more place of study
         </button>
     <div class="mt-3"  id="resume_education_block">
+
+    <!-- existing blocks -->
+    {% for education_block in education_blocks %}
+        <div class="education-block" id="edu-element-{{ education_block.uuid }}">
+            <p>
+        <div class="d-flex justify-content-between"><label for="educational_institution" class="form-label"> Educational institution: </label><a id="delete-{{ education_block.uuid }}" class="delete-xmark"><i class="fa-solid fa-xmark fa-lg"></i></a></div>
+        <input type="text" value="{{ education_block.educational_institution }}" name="educational_institution:{{ education_block.uuid }}" class="form-control" maxlength="200" required="" id="educational_institution_{{ education_block.uuid }}">
+        </p>
+        <p>
+        <label for="specialization" class="form-label"> Specialization: </label>
+        <input type="text" value="{{ education_block.specialization }}" name="specialization:{{ education_block.uuid }}" class="form-control" maxlength="200" required="" id="specialization">
+        </p>
+        <p>
+        <label for="year_of_graduation" class="form-label"> Year of graduation: </label>
+        <input type="number" value="{{ education_block.year_of_graduation }}" name="year_of_graduation:{{ education_block.uuid }}" class="form-control" required="" id="year_of_graduation">
+        </p>
+
+        </div>
+    {% endfor %}
+
+
     </div>
     </div>
         <button type="submit" class="btn btn-outline-primary mt-3">Update</button>
