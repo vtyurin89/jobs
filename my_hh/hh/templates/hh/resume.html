@@ -42,11 +42,44 @@
 
     <!-- Education -->
     <div>
-        <h4 class="mt-3">Education</h4>
-        <a href="{% url 'edit_resume_education' resume.id %}" class="resume-link">Edit</a>
+        <div class="justify-content-start">
+            <h4 class="d-inline mt-3">Education</h4>
+            <a href="{% url 'edit_resume_education' resume.id %}" class="resume-link d-inline ms-3">Edit</a>
+        </div>
+        <div class="mt-3">
         {% for education_block in education_blocks %}
-        <p>{{ education_block }}</p>
+        <div class="row justify-content-start">
+            <div class="col-2">
+                <p>{{ education_block.year_of_graduation }}</p>
+            </div>
+            <div class="col-10">
+                <p class="mb-1"><b>{{ education_block.educational_institution }}</b></p>
+                <p>{{ education_block.specialization }}</p>
+            </div>
+        </div>
         {% endfor %}
+        </div>
+    </div>
+
+    <!-- Work experience -->
+    <div class="mt-5">
+        <div class="justify-content-start">
+            <h4 class="d-inline mt-3">Work experience</h4>
+            <a href="{% url 'edit_resume_work_experience' resume.id %}" class="resume-link d-inline ms-3">Edit</a>
+        </div>
+        <div class="mt-3">
+            {% for work_experience_block in work_experience_blocks %}
+            <div class="row justify-content-start">
+            <div class="col-2">
+                <p>{{ work_experience_block.employment_began }}</p>
+            </div>
+            <div class="col-10">
+                <p class="mb-1"><b>{{ work_experience_block.employer }}</b></p>
+                <p>{{ work_experience_block.position }}</p>
+            </div>
+        </div>
+            {% endfor %}
+        </div>
     </div>
 
 </div>

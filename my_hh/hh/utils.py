@@ -58,3 +58,16 @@ def get_filter_kwargs(request, filter_list):
 def calculate_age(date_of_birth):
     today = date.today()
     return today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
+
+
+def generate_post_dict(request):
+    post_dict = {}
+    for key in request.POST:
+        if key == 'csrfmiddlewaretoken':
+            pass
+        else:
+            key_name, key_id = key.split(':')
+            if key_id not in post_dict:
+                post_dict[key_id] = {}
+            post_dict[key_id][key_name] = request.POST[key]
+    return post_dict

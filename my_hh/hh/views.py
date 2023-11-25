@@ -12,7 +12,8 @@ import json
 
 from .models import *
 from .forms import *
-from .utils import salary_radio_value, get_filter_kwargs, calculate_age
+from .utils import get_filter_kwargs, calculate_age, generate_post_dict
+
 
 def index(request):
     context = {}
@@ -212,30 +213,53 @@ def edit_resume_education_view(request, resume_uuid):
         raise PermissionDenied()
     resume = Resume.objects.get(id=resume_uuid)
     if request.method == 'POST':
-        post_dict = {}
-        for key in request.POST:
-            if key == 'csrfmiddlewaretoken':
-                pass
-            else:
-                key_name, key_id = key.split(':')
-                if key_id not in post_dict:
-                    post_dict[key_id] = {}
-                post_dict[key_id][key_name] = request.POST[key]
+        post_dict = generate_post_dict(request)
+
         for edu_id in post_dict:
             obj, created = ResumeEducationBlock.objects.update_or_create(
                 uuid=edu_id,
-                defaults={"resume": resume,
+                resume=resume,
+                defaults={
                 "educational_institution": post_dict[edu_id]['educational_institution'],
                 "specialization": post_dict[edu_id]['specialization'],
                 "year_of_graduation": post_dict[edu_id]['year_of_graduation']
                           },
             )
-        print(post_dict)
+        ResumeEducationBlock.objects.filter(resume=resume).exclude(uuid__in=post_dict).delete()
         messages.success(request, "Resume updated")
         return redirect(resume)
-    education_blocks = ResumeEducationBlock.objects.filter(resume=resume)
+    education_blocks = ResumeEducationBlock.objects.filter(resume=resume).order_by("year_of_graduation")
     context = {'education_blocks': education_blocks}
     return render(request, "hh/edit_resume_education.html", context)
+
+
+def edit_resume_work_experience_view(request, resume_uuid):
+    if request.user.is_employer:
+        raise PermissionDenied()
+    resume = Resume.objects.get(id=resume_uuid)
+    if request.method == 'POST':
+        post_dict = generate_post_dict(request)
+        print(post_dict)
+        for work_id in post_dict:
+            date_start = post_dict[work_id]['employment_began']
+            date_start = date_start + '-01'
+            date_end = post_dict[work_id]['employment_ended'] + '-01' \
+                if post_dict[work_id]['employment_ended'] else None
+            obj, created = ResumeWorkExperienceBlock.objects.update_or_create(
+                uuid=work_id,
+                resume=resume,
+                defaults={
+                    "employer": post_dict[work_id]['organization'],
+                    "position": post_dict[work_id]['position'],
+                    "job_duties": post_dict[work_id]['job_duties'],
+                    "employment_began": date_start,
+                    "employment_ended": date_end,
+                },
+            )
+        messages.success(request, "Resume updated")
+        return redirect(resume)
+    context = {}
+    return render(request, "hh/edit_resume_work_experience.html", context)
 
 
 @login_required
@@ -251,12 +275,16 @@ def my_resumes_view(request):
 def resume_view(request, resume_uuid):
     context = {}
     try:
-        resume = Resume.objects.prefetch_related('education_blocks').get(id=resume_uuid)
+        resume = Resume.objects.get(id=resume_uuid)
     except ObjectDoesNotExist:
         raise Http404()
-    education_blocks = ResumeEducationBlock.objects.filter(resume=resume)
+    education_blocks = ResumeEducationBlock.objects.filter(resume=resume).order_by('-year_of_graduation')
+    work_experience_blocks = ResumeWorkExperienceBlock.objects.filter(resume=resume).order_by('-employment_ended')
     age = calculate_age(resume.date_of_birth)
-    context.update({'resume': resume, 'age': age, 'education_blocks': education_blocks})
+    context.update({'resume': resume,
+                    'age': age,
+                    'education_blocks': education_blocks,
+                    'work_experience_blocks': work_experience_blocks})
     return render(request, "hh/resume.html", context)
 
 

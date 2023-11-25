@@ -150,17 +150,17 @@ class ResumeEducationBlock(models.Model):
         return f'{self.resume} education: {self.educational_institution}'
 
 
-class ResumeIndustry(models.Model):
-    resume = models.OneToOneField('Resume', on_delete=models.CASCADE)
+class ResumeWorkExperienceBlock(models.Model):
+    uuid = models.CharField(max_length=20, null=True)
+    resume = models.ForeignKey('Resume', on_delete=models.CASCADE)
     employer = models.CharField(max_length=150, null=True, blank=True)
-    industry = models.ForeignKey('Industry', on_delete=models.PROTECT)
-    posiion = models.CharField(max_length=150, null=True, blank=True)
+    position = models.CharField(max_length=150, null=True, blank=True)
     employment_began = models.DateField(blank=True, null=True)
     employment_ended = models.DateField(blank=True, null=True)
-    job_duties = models.CharField(max_length=1000, null=True, blank=True)
+    job_duties = models.TextField(max_length=1500, null=True, blank=True)
 
     def __str__(self):
-        return f'{self.resume} industry'
+        return f'{self.resume}: {self.employer} - {self.position}'
 
 
 
@@ -183,3 +183,8 @@ class ResumeIndustry(models.Model):
 # @receiver(post_save, sender=User)
 # def save_user_profile(sender, instance, **kwargs):
 #     instance.profile.save()
+
+
+class Product(models.Model):
+    name = models.CharField(max_length=100)
+    expiration_date = models.DateField()

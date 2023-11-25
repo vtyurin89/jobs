@@ -19,7 +19,10 @@ class JobPostingAdmin(admin.ModelAdmin):
 
 class IndustryAdmin(admin.ModelAdmin):
     list_display = ('title',)
-    
+
+
+class ResumeWorkExperienceBlockAdmin(admin.ModelAdmin):
+    list_display = ('resume', 'employer', 'position',)
 
 
 admin.site.register(User, UserAdmin)
@@ -28,3 +31,5 @@ admin.site.register(JobSeekerProfile, JobSeekerProfileAdmin)
 admin.site.register(EmployerProfile, EmployerProfileAdmin)
 admin.site.register(JobPosting, JobPostingAdmin)
 admin.site.register(Industry, IndustryAdmin)
+
+admin.site.register(ResumeWorkExperienceBlock, ResumeWorkExperienceBlockAdmin)

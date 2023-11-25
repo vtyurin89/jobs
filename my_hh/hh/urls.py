@@ -14,6 +14,7 @@ urlpatterns = [
     path('account/search_for_jobs', views.search_for_jobs, name='search_for_jobs'),
     path('account/create_resume', views.create_resume_view, name='create_resume_main'),
     path('account/edit_resume/education/<uuid:resume_uuid>', views.edit_resume_education_view, name='edit_resume_education'),
+    path('account/edit_resume/work_experience/<uuid:resume_uuid>', views.edit_resume_work_experience_view, name='edit_resume_work_experience'),
     path('resume/<uuid:resume_uuid>', views.resume_view, name='resume'),
     ]
 
