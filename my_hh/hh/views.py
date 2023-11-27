@@ -211,7 +211,7 @@ def create_resume_view(request):
 def edit_resume_education_view(request, resume_uuid):
     if request.user.is_employer:
         raise PermissionDenied()
-    resume = Resume.objects.get(id=resume_uuid)
+    resume = Resume.objects.prefetch_related('education_blocks').get(id=resume_uuid)
     if request.method == 'POST':
         post_dict = generate_post_dict(request)
 
@@ -229,14 +229,14 @@ def edit_resume_education_view(request, resume_uuid):
         messages.success(request, "Resume updated")
         return redirect(resume)
     education_blocks = ResumeEducationBlock.objects.filter(resume=resume).order_by("year_of_graduation")
-    context = {'education_blocks': education_blocks}
+    context = {'education_blocks': education_blocks, 'resume': resume}
     return render(request, "hh/edit_resume_education.html", context)
 
 
 def edit_resume_work_experience_view(request, resume_uuid):
     if request.user.is_employer:
         raise PermissionDenied()
-    resume = Resume.objects.get(id=resume_uuid)
+    resume = Resume.objects.prefetch_related('work_experience_blocks').get(id=resume_uuid)
     if request.method == 'POST':
         post_dict = generate_post_dict(request)
         print(post_dict)
@@ -256,9 +256,11 @@ def edit_resume_work_experience_view(request, resume_uuid):
                     "employment_ended": date_end,
                 },
             )
+        ResumeWorkExperienceBlock.objects.filter(resume=resume).exclude(uuid__in=post_dict).delete()
         messages.success(request, "Resume updated")
         return redirect(resume)
-    context = {}
+    work_experience_blocks = ResumeWorkExperienceBlock.objects.filter(resume=resume).order_by("employment_began")
+    context = {'work_experience_blocks': work_experience_blocks, 'resume': resume}
     return render(request, "hh/edit_resume_work_experience.html", context)
 
 

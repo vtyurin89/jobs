@@ -13,8 +13,8 @@
         <div class="resume-list-block">
                     <a class="job-search-result-title" href="{{ resume.get_absolute_url }}"><b>{{ resume.title }}</b></a>
         <div class="d-flex flex-row mt-3">
-            <a href="#" class="resume-link">Edit</a>
-            <a href="" class="resume-link ms-3">Delete</a>
+            <a href="{{ resume.get_absolute_url }}" class="resume-link">Edit</a>
+            <a href="" class="delete resume-link ms-3" id="{{ resume.id }}">Delete</a>
 
 
         </div>
@@ -26,3 +26,7 @@
 </div>
 
 {% endblock body %}
+
+{% block script %}
+    <script src="{% static 'hh/my_resumes.js' %}"></script>
+{% endblock script %}

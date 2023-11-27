@@ -11,17 +11,50 @@
         <h2 id="register_label">Work Experience</h2>
     </div>
 
+    <a href="{{ resume.get_absolute_url }}" class="resume-link">Back to resume</a>
+
     <form method="post" autocomplete="off">
 
     {% csrf_token %}
 
-    <!-- Previous jobs block is here -->
+    <!-- Work experience block is here -->
     <div class="container p-0">
     <h4 class="mt-5 mb-3">Work experience</h4>
         <button type="button" class="btn btn-outline-primary" id="btn_employer_add">
             Add an employer
         </button>
     <div  id="resume_previous_job_block">
+
+        <!-- Existing blocks -->
+
+        {% for work_experience_block in work_experience_blocks %}
+
+        <div class="education-block" id="work-element-{{ work_experience_block.uuid }}">
+
+        <p>
+        <div class="d-flex justify-content-between"><label for="organization" class="form-label"> Organization: </label><a id="delete-{{ work_experience_block.uuid }}" class="delete-xmark"><i class="fa-solid fa-xmark fa-lg"></i></a></div>
+        <input type="text" value="{{ work_experience_block.employer }}" name="organization:{{ work_experience_block.uuid }}" class="form-control" maxlength="200" required id="organization">
+        </p>
+        <p>
+        <label for="position" class="form-label"> Position: </label>
+        <input type="text" value="{{ work_experience_block.position }}" name="position:{{ work_experience_block.uuid }}" class="form-control" maxlength="200" required id="position">
+        </p>
+        <p>
+        <label for="job_duties" class="form-label"> Job duties: </label>
+        <textarea rows="3" maxlength="1500" name="job_duties:{{ work_experience_block.uuid }}" class="form-control" required id="job_duties">{{ work_experience_block.job_duties }}</textarea>
+        </p>
+        <p>
+        <label for="employment_began" class="form-label"> Was employed since: </label>
+        <input type="month" min="1900-01" value="{{ work_experience_block.employment_began|date:'Y-m' }}" name="employment_began:{{ work_experience_block.uuid }}" class="form-control" maxlength="200" required id="employment_began">
+        </p>
+        <p>
+        <label for="employment_ended" class="form-label"> Was employed until: </label>
+        <input type="month" min="1900-01" value="{{ work_experience_block.employment_ended|date:'Y-m' }}" name="employment_ended:{{ work_experience_block.uuid }}" class="form-control" maxlength="200" id="employment_ended">
+        </p>
+
+        </div>
+
+        {% endfor %}
 
     </div>
     </div>

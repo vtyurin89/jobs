@@ -5,13 +5,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Activate delete Xmark for existing blocks
 
-    // activateXmarks();
+    activateXmarks();
 
     // Education => add one more place of study
     document.getElementById('btn_employer_add').addEventListener('click', () => AddNewWorkPlace(event));
 
 
 });
+
+
+function activateXmarks() {
+    document.querySelectorAll('[id^="delete-"]').forEach((button) => {
+       var x_id = button.id.split('-')[1];
+       button.addEventListener('click', () => deleteWorkPlace(x_id));
+    });
+}
 
 
 function AddNewWorkPlace(event) {

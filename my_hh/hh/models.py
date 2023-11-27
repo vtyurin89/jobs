@@ -152,7 +152,7 @@ class ResumeEducationBlock(models.Model):
 
 class ResumeWorkExperienceBlock(models.Model):
     uuid = models.CharField(max_length=20, null=True)
-    resume = models.ForeignKey('Resume', on_delete=models.CASCADE)
+    resume = models.ForeignKey('Resume', on_delete=models.CASCADE, related_name='work_experience_blocks')
     employer = models.CharField(max_length=150, null=True, blank=True)
     position = models.CharField(max_length=150, null=True, blank=True)
     employment_began = models.DateField(blank=True, null=True)

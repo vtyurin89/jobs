@@ -71,7 +71,11 @@
             {% for work_experience_block in work_experience_blocks %}
             <div class="row justify-content-start">
             <div class="col-2">
-                <p>{{ work_experience_block.employment_began }}</p>
+                {% if work_experience_block.employment_ended %}
+                <p>{{ work_experience_block.employment_began }} - {{ work_experience_block.employment_ended }}</p>
+                {% else %}
+                <p>{{ work_experience_block.employment_began }} - present</p>
+                {% endif %}
             </div>
             <div class="col-10">
                 <p class="mb-1"><b>{{ work_experience_block.employer }}</b></p>

@@ -11,6 +11,8 @@
         <h2 id="register_label">Education</h2>
     </div>
 
+    <a href="{{ resume.get_absolute_url }}" class="resume-link">Back to resume</a>
+
     <form method="post" autocomplete="off">
 
     {% csrf_token %}
@@ -25,7 +27,7 @@
     <!-- existing blocks -->
     {% for education_block in education_blocks %}
         <div class="education-block" id="edu-element-{{ education_block.uuid }}">
-            <p>
+        <p>
         <div class="d-flex justify-content-between"><label for="educational_institution" class="form-label"> Educational institution: </label><a id="delete-{{ education_block.uuid }}" class="delete-xmark"><i class="fa-solid fa-xmark fa-lg"></i></a></div>
         <input type="text" value="{{ education_block.educational_institution }}" name="educational_institution:{{ education_block.uuid }}" class="form-control" maxlength="200" required="" id="educational_institution_{{ education_block.uuid }}">
         </p>
