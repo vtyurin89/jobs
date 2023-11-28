@@ -12,7 +12,7 @@
     <h3 class="mt-3"><b>{{ resume.first_name }} {{ resume.last_name }}</b></h3>
     <h4 class="mt-3">{{ resume.title }}</h4>
     <p class="mt-3 mb-1">{{ age }} years old, born {{ resume.date_of_birth }}</p>
-    <a href="#" class="resume-link">Edit</a>
+    <a href="{% url 'edit_resume_main' resume.id %}" class="resume-link">Edit</a>
 
     <div class="divider"></div>
 

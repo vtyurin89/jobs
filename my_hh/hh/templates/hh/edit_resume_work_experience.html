@@ -48,7 +48,7 @@
         <input type="month" min="1900-01" value="{{ work_experience_block.employment_began|date:'Y-m' }}" name="employment_began:{{ work_experience_block.uuid }}" class="form-control" maxlength="200" required id="employment_began">
         </p>
         <p>
-        <label for="employment_ended" class="form-label"> Was employed until: </label>
+        <label for="employment_ended" class="form-label"> Was employed until (leave blank if still employed): </label>
         <input type="month" min="1900-01" value="{{ work_experience_block.employment_ended|date:'Y-m' }}" name="employment_ended:{{ work_experience_block.uuid }}" class="form-control" maxlength="200" id="employment_ended">
         </p>
 

@@ -175,16 +175,9 @@ class ResumeWorkExperienceBlock(models.Model):
 #     :return:
 #     """
 #     if created:
-#         if instance.is_employer:
-#             EmployerProfile.objects.get_or_create(user=instance)
-#         else:
-#             JobSeekerProfile.objects.get_or_create(user=instance)
-
+#         if not instance.is_employer:
+#
+#
 # @receiver(post_save, sender=User)
 # def save_user_profile(sender, instance, **kwargs):
 #     instance.profile.save()
-
-
-class Product(models.Model):
-    name = models.CharField(max_length=100)
-    expiration_date = models.DateField()

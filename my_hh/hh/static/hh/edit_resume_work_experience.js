@@ -54,7 +54,7 @@ function generateWorkPlaceBlockHtml(work_id) {
         <input type="month" min="1900-01" name="employment_began:${work_id}" class="form-control" maxlength="200" required id="employment_began">
         </p>
         <p>
-        <label for="employment_ended" class="form-label"> Was employed until: </label>
+        <label for="employment_ended" class="form-label"> Was employed until (leave blank if still employed): </label>
         <input type="month" min="1900-01" name="employment_ended:${work_id}" class="form-control" maxlength="200" id="employment_ended">
         </p>
         `

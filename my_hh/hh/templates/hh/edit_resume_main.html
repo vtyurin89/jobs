@@ -1,10 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "hh/layout.html" %}
+{% load static %}
+
+{% block title %}Resume - edit{% endblock %}
+
+{% block body %}
+    <!-- Form to create a new resume -->
+        <div class="container mt-5">
+        <div class="row d-flex justify-content-center mt-5">
+        <div class="col-md-12 col-lg-9 ps-3 pe-3">
+
+        <a href="{{ resume.get_absolute_url }}" class="resume-link mb-3">Back to resume</a>
+
+        <div class="d-flex justify-content-center"><h2 id="register_label">Edit resume</h2></div>
+
+        <form method="post" autocomplete="off">
+
+        {% csrf_token %}
+        <div>{{ form.non_field_errors }}</div>
+        {% for part in form %}
+        <p><label for="{{ part.id_for_label }}" class="form-label"> {{ part.label }}: </label>{{ part }} </p>
+        <div>{{ part.errors }}</div>
+        {% endfor %}
+
+
+        <!-- Submit button -->
+      <div class="text-center mt-5">
+      <button type="submit" class="btn btn-primary btn-block mb-4">Save and contimue</button>
+      </div>
+
+      </form>
+      </div>
+      </div>
+      </div>
+
+
+{% endblock body %}
+
+{% block script %}
+    <script src="{% static 'hh/resume_main.js' %}"></script>
+{% endblock %}

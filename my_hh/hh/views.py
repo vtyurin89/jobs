@@ -2,7 +2,7 @@ from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Exists, OuterRef
 from django.http import HttpResponseRedirect, Http404, JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
 from django.db import IntegrityError
@@ -208,6 +208,21 @@ def create_resume_view(request):
 
 
 @login_required
+def edit_resume_main_view(request, resume_uuid):
+    if request.user.is_employer:
+        raise PermissionDenied()
+
+    resume = get_object_or_404(Resume, id=resume_uuid)
+    form = CreateResumeForm(request.POST or None, instance=resume, user=request.user)
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            return redirect(resume)
+    context = {'form': form, 'resume': resume}
+    return render(request, "hh/edit_resume_main.html", context)
+
+
+@login_required
 def edit_resume_education_view(request, resume_uuid):
     if request.user.is_employer:
         raise PermissionDenied()
@@ -271,6 +286,12 @@ def my_resumes_view(request):
     my_resumes = Resume.objects.filter(user=request.user)
     context = {'my_resumes': my_resumes}
     return render(request, "hh/my_resumes.html", context)
+
+
+@login_required
+def delete_resume(request, resume_uuid):
+    Resume.objects.get(id=resume_uuid).delete()
+    return HttpResponseRedirect(reverse("my_resumes"))
 
 
 @login_required

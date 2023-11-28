@@ -9,19 +9,17 @@ var config = {
 
 // Main function starts after the DOM was loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded');
-
 
     // City dropdown thing was not part of the django form, so add it now
     addDropdown();
 
 
     // Load initial list of cities
-    getCityList();
+    getCityList(true);
 
     // Changing the country creates a new list
     const cityInput = document.getElementById('city');
-    document.getElementById('country').addEventListener('change', () => getCityList());
+    document.getElementById('country').addEventListener('change', () => getCityList(false));
 
     // Dynamic search for cities
     cityInput.addEventListener("input", () => dynamicInputChange(cityInput));
@@ -31,9 +29,13 @@ document.addEventListener('DOMContentLoaded', function() {
 })
 
 //Function requests all cities of a country and turns them into a list of names
-async function getCityList() {
+async function getCityList(initial_step) {
     const clearCity = document.getElementById('city');
-    clearCity.value = "";
+
+    // Clears the city field after changing the country except the very first function launch
+    if (initial_step === false) {
+        clearCity.value = "";
+    }
 
     var newCountry = document.getElementById('country').value;
     if (newCountry == 'None') {
