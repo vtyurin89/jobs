@@ -33,7 +33,7 @@ def index(request):
                 jobs_in_location = JobPosting.objects.filter(
                         country=request.user.jobseekerprofile.preferred_country,
                         city=request.user.jobseekerprofile.preferred_location
-                        ).order_by(
+                        ).exclude(is_archived=True).order_by(
                         "-job_open_date"
                         ).select_related('industry')[:12]
                 industries_gt0_in_location = Industry.objects.annotate(
@@ -41,7 +41,8 @@ def index(request):
                         ).filter(
                         cnt_jobpostings__gt=0,
                         jobposting__country=request.user.jobseekerprofile.preferred_country,
-                        jobposting__city=request.user.jobseekerprofile.preferred_location
+                        jobposting__city=request.user.jobseekerprofile.preferred_location,
+                        jobposting__is_archived=False,
                         )
                 if jobs_in_location:
                     context.update({'jobs_in_location': jobs_in_location})
@@ -49,7 +50,7 @@ def index(request):
                     context.update({'industries_gt0_in_location': industries_gt0_in_location})
             # job seeker does not have a city
             elif not request.user.jobseekerprofile.preferred_location:
-                jobs_in_location = JobPosting.objects.all().order_by(
+                jobs_in_location = JobPosting.objects.all().exclude(is_archived=True).order_by(
                                     "-job_open_date").select_related('industry')[:12]
                 industries_gt0_in_location = Industry.objects.annotate(
                         cnt_jobpostings=Count('jobposting')
@@ -69,8 +70,12 @@ def job_posting_view(request, job_posting_uuid):
         job_posting = JobPosting.objects.get(id=job_posting_uuid)
     except ObjectDoesNotExist:
         raise Http404
-    is_liked_by_user_filter = job_posting.liked.filter(id=request.user.id)
-    is_liked_by_user = True if len(is_liked_by_user_filter) > 0 else False
+
+    if not request.user.is_employer:
+        is_liked_by_user_filter = job_posting.liked.filter(id=request.user.id)
+        is_liked_by_user = True if len(is_liked_by_user_filter) > 0 else False
+    else:
+        is_liked_by_user = False
     context = {'job_posting': job_posting, 'is_liked_by_user': is_liked_by_user}
     return render(request, "hh/job_posting.html", context)
 
@@ -126,6 +131,16 @@ def favourite_job_postings(request):
 
 
 @login_required
+def my_job_postings_view(request):
+    # Only employers can see this page
+    if not request.user.is_employer:
+        raise PermissionDenied()
+    my_job_postings = JobPosting.objects.filter(employer=request.user).order_by('-job_open_date')
+    context = {'my_job_postings': my_job_postings}
+    return render(request, "hh/my_job_postings.html", context)
+
+
+@login_required
 def search_for_jobs(request):
     #This page is only for job seekers
     if request.user.is_employer:
@@ -153,7 +168,7 @@ def search_for_jobs(request):
                 )
             ).filter(**filter_kwargs).exclude(
                 title__icontains=excluded_words_in_query
-            ).order_by("-job_open_date")
+            ).exclude(is_archived=True).order_by("-job_open_date")
         else:
             jobs = JobPosting.objects.annotate(
                 is_liked=Exists(
@@ -161,7 +176,7 @@ def search_for_jobs(request):
                         jobposting_id=OuterRef('pk'), user=request.user
                     )
                 )
-            ).filter(**filter_kwargs).order_by("-job_open_date")
+            ).filter(**filter_kwargs).exclude(is_archived=True).order_by("-job_open_date")
 
         context.update({'jobs': jobs})
         return render(request, 'hh/search_for_jobs.html', context)
@@ -192,6 +207,23 @@ def create_job_posting_view(request):
 
 
 @login_required
+def edit_profile_view(request):
+    if request.user.is_employer:
+        profile = request.user.employerprofile
+        form = EditEmployerProfileForm(request.POST or None, instance=profile)
+    else:
+        profile = request.user.jobseekerprofile
+        form = EditJobSeekerProfileForm(request.POST or None, instance=profile)
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated")
+            return redirect('index')
+    context = {'profile': profile, 'form': form}
+    return render(request, "hh/edit_profile.html", context)
+
+
+@login_required
 def create_resume_view(request):
     #This page is only for job seekers
     if request.user.is_employer:
@@ -217,6 +249,7 @@ def edit_resume_main_view(request, resume_uuid):
     if request.method == 'POST':
         if form.is_valid():
             form.save()
+            messages.success(request, "Resume updated")
             return redirect(resume)
     context = {'form': form, 'resume': resume}
     return render(request, "hh/edit_resume_main.html", context)
@@ -226,7 +259,12 @@ def edit_resume_main_view(request, resume_uuid):
 def edit_resume_education_view(request, resume_uuid):
     if request.user.is_employer:
         raise PermissionDenied()
-    resume = Resume.objects.prefetch_related('education_blocks').get(id=resume_uuid)
+    try:
+        resume = Resume.objects.prefetch_related('education_blocks').get(id=resume_uuid)
+    except ObjectDoesNotExist:
+        raise Http404()
+
+    # processing post data
     if request.method == 'POST':
         post_dict = generate_post_dict(request)
 
@@ -248,10 +286,16 @@ def edit_resume_education_view(request, resume_uuid):
     return render(request, "hh/edit_resume_education.html", context)
 
 
+@login_required
 def edit_resume_work_experience_view(request, resume_uuid):
     if request.user.is_employer:
         raise PermissionDenied()
-    resume = Resume.objects.prefetch_related('work_experience_blocks').get(id=resume_uuid)
+    try:
+        resume = Resume.objects.prefetch_related('education_blocks').get(id=resume_uuid)
+    except ObjectDoesNotExist:
+        raise Http404()
+
+    #processing post data
     if request.method == 'POST':
         post_dict = generate_post_dict(request)
         print(post_dict)
@@ -339,6 +383,8 @@ def logout_view(request):
 def register_view(request):
     if request.method == 'POST':
 
+        print(request.POST)
+
         username = request.POST["username"]
         email = request.POST["email"]
         first_name = request.POST['first_name']
@@ -352,35 +398,32 @@ def register_view(request):
 
         # Creating the new user
         try:
-            user = User.objects.create_user(username, email, password)
-            user.is_employer = is_employer
-            user.first_name = first_name
-            user.last_name = last_name
-            user.save()
+            user = User.objects.create_user(username, email, password,
+                                            is_employer=is_employer, first_name=first_name, last_name=last_name)
         except IntegrityError:
             messages.error(request, "Username already taken")
             return render(request, "hh/register.html")
 
-        # Creating additional profile
+        # EmployerProfile or JobSeekerProfile
+        # are created by create_user_profile function which is a signal receiver
+        # check models.py for more details
+
+        # Modifying additional profile
         if user.is_employer:
-            new_profile = EmployerProfile.objects.get_or_create(
-                user=user,
+            EmployerProfile.objects.filter(user=user).update(
                 company_name=request.POST.get('company_name', None),
                 company_logo=request.POST.get('company_logo', None),
                 telegram_ID=request.POST.get('telegram_ID', None),
                 phone_number=request.POST.get('phone_number', None),
             )
-            new_profile[0].save()
         else:
-            new_profile = JobSeekerProfile.objects.get_or_create(
-                user=user,
+            JobSeekerProfile.objects.filter(user=user).update(
                 image=request.POST.get('photo', None),
                 telegram_ID=request.POST.get('telegram_ID', None),
                 phone_number=request.POST.get('phone_number', None),
                 preferred_country=request.POST.get('country', None),
                 preferred_location=request.POST.get('city', None),
             )
-            new_profile[0].save()
         login(request, user)
         messages.success(request, "Welcome!")
         return HttpResponseRedirect(reverse("index"))

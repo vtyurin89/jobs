@@ -75,9 +75,11 @@
                   {% if not user.is_employer %}
                 <li><a class="dropdown-item" href="{% url 'favourite_job_postings' %}">Selected job postings</a></li>
                 <li><a class="dropdown-item" href="{% url 'my_resumes' %}">My resumes</a></li>
+                <li><a class="dropdown-item" href="{% url 'edit_profile' %}">Edit profile</a></li>
 
                   {% else %}
-
+                <li><a class="dropdown-item" href="{% url 'my_job_postings' %}">My job postings</a></li>
+                <li><a class="dropdown-item" href="{% url 'edit_profile' %}">Edit profile</a></li>
                   {% endif %}
 
                 <li><hr class="dropdown-divider"></li>

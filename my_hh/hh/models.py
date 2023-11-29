@@ -10,6 +10,30 @@ import uuid
 from django.urls import reverse
 
 
+COUNTRY_CHOICES = (('RU', 'Russia'), ('KZ', 'Kazakhstan'),
+                   ('BY', 'Belarus'), ('UZ', 'Uzbekistan'),
+                   ('AZ', 'Azerbaijan'), ('GE', 'Georgia'),
+                   ('KG', 'Kyrgyzstan'),)
+
+INDUSTRY_CHOICES = (
+    ('1', 'Unspecified'),
+    ('2', 'Consulting'),
+    ('3', 'Accounting'),
+    ('4', 'Finance'),
+    ('5', 'Advertising'),
+    ('6', 'Human Resources'),
+    ('7', 'Sales'),
+    ('8', 'News & Media'),
+    ('9', 'Insurance'),
+    ('10', 'Entertainment'),
+    ('11', 'Marketing'),
+    ('12', 'Science & Research'),
+    ('13', 'Tech'),
+    ('14', 'Healthcare'),
+    ('15', 'Manufacturing'),
+)
+
+
 class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     is_employer = models.BooleanField(default=False)
@@ -19,23 +43,7 @@ class User(AbstractUser):
 
 
 class JobPosting(models.Model):
-    INDUSTRY_CHOICES = (
-        ('1', 'Unspecified'),
-        ('2', 'Consulting'),
-        ('3', 'Accounting'),
-        ('4', 'Finance'),
-        ('5', 'Advertising'),
-        ('6', 'Human Resources'),
-        ('7', 'Sales'),
-        ('8', 'News & Media'),
-        ('9', 'Insurance'),
-        ('10', 'Entertainment'),
-        ('11', 'Marketing'),
-        ('12', 'Science & Research'),
-        ('13', 'Tech'),
-        ('14', 'Healthcare'),
-        ('15', 'Manufacturing'),
-    )
+
     COUNTRY_CHOICES = (
         ('RU', 'Russia'),
         ('KZ', 'Kazakhstan'),
@@ -60,7 +68,7 @@ class JobPosting(models.Model):
     job_open_date = models.DateTimeField(auto_now_add=True)
     min_salary = models.DecimalField(max_digits=10, decimal_places=2)
     max_salary = models.DecimalField(max_digits=10, decimal_places=2)
-    visible = models.BooleanField(default=True)
+    is_archived = models.BooleanField(default=False)
     liked = models.ManyToManyField('User', blank=True, related_name='liked_posting')
 
     def __str__(self):
@@ -87,7 +95,7 @@ class JobSeekerProfile(models.Model):
     telegram_ID = models.CharField(max_length=50, null=True, blank=True)
     preferred_country = models.CharField(max_length=100, null=True, blank=True)
     preferred_location = models.CharField(max_length=100, null=True, blank=True)
-    preferred_industry = models.CharField(max_length=3, choices=JobPosting.INDUSTRY_CHOICES, default='1')
+    preferred_industry = models.CharField(max_length=3, choices=INDUSTRY_CHOICES, default='1')
 
     def __str__(self):
         return f'{self.user}_profile'
@@ -163,21 +171,27 @@ class ResumeWorkExperienceBlock(models.Model):
         return f'{self.resume}: {self.employer} - {self.position}'
 
 
+class ResumeToEmployerNotification(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    employer = models.ForeignKey('User', on_delete=models.CASCADE, related_name='notification_receivers')
+    resume = models.ForeignKey('Resume', on_delete=models.CASCADE, related_name='resumes')
+    job_posting = models.ForeignKey('JobPosting', on_delete=models.CASCADE, related_name='resumes')
+    received = models.BooleanField(default=False)
 
-# @receiver(post_save, sender=User)
-# def create_user_profile(sender, instance, created, **kwargs):
-#     """
-#     Creates user profile if it does not exist
-#     :param sender: User
-#     :param instance:
-#     :param created:
-#     :param kwargs:
-#     :return:
-#     """
-#     if created:
-#         if not instance.is_employer:
-#
-#
-# @receiver(post_save, sender=User)
-# def save_user_profile(sender, instance, **kwargs):
-#     instance.profile.save()
+    def __str__(self):
+        return f'Notification: {self.resume} for {self.employer}'
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    """
+    Creates employer / job seeker profile after a new user was created
+
+    :return:
+    """
+    if created:
+        if instance.is_employer:
+            EmployerProfile.objects.create(user=instance)
+        else:
+            JobSeekerProfile.objects.create(user=instance)
+

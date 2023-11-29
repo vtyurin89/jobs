@@ -84,3 +84,31 @@ class CreateResumeForm(ModelForm):
         if commit:
             my_form_object.save()
         return my_form_object
+
+
+class EditEmployerProfileForm(ModelForm):
+    class Meta:
+        model = EmployerProfile
+        fields = ["telegram_ID", 'company_name', 'company_logo', 'phone_number']
+        widgets = {
+            "phone_number": RegionalPhoneNumberWidget(attrs={'class': 'form-control', 'name': 'phone_number'}),
+            "telegram_ID": forms.TextInput(attrs={'class': 'form-control', 'name': 'telegram_ID'}),
+            "company_name": forms.TextInput(attrs={'class': 'form-control', 'name': 'company_name'}),
+            "company_logo": forms.TextInput(attrs={'class': 'form-control', 'name': 'company_logo'}),
+        }
+
+
+class EditJobSeekerProfileForm(ModelForm):
+    preferred_country = forms.ChoiceField(choices=COUNTRY_CHOICES,
+                                          widget=forms.Select(attrs={'class': 'form-select', 'name': 'country', 'id': 'country'}))
+
+    class Meta:
+        model = JobSeekerProfile
+        fields = ["image", "phone_number", "telegram_ID", "preferred_country", "preferred_location", "preferred_industry"]
+        widgets = {
+            "phone_number": RegionalPhoneNumberWidget(attrs={'class': 'form-control', 'name': 'phone_number'}),
+            "image": forms.URLInput(attrs={'class': 'form-control', 'name': 'image'}),
+            "telegram_ID": forms.TextInput(attrs={'class': 'form-control', 'name': 'telegram_ID'}),
+            "preferred_location": forms.TextInput(attrs={'class': 'form-control', 'name': 'city', 'id': 'city'}),
+            "preferred_industry": forms.Select(attrs={'class': 'form-select', 'name': 'industry'}),
+        }

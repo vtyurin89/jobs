@@ -1,17 +1,16 @@
 {% extends "hh/layout.html" %}
 {% load static %}
 
-{% block title %}Resume - edit{% endblock %}
+{% block title %}Profile - edit{% endblock %}
 
 {% block body %}
-    <!-- Form to edit resume -->
+
+    <!-- Form to edit profile -->
         <div class="container mt-5">
         <div class="row d-flex justify-content-center mt-5">
         <div class="col-md-12 col-lg-9 ps-3 pe-3">
 
-        <a href="{{ resume.get_absolute_url }}" class="resume-link mb-3">Back to resume</a>
-
-        <div class="d-flex justify-content-center"><h2 id="register_label">Edit resume</h2></div>
+        <div class="d-flex justify-content-center"><h2 id="register_label">Edit profile</h2></div>
 
         <form method="post" autocomplete="off">
 
@@ -25,7 +24,7 @@
 
         <!-- Submit button -->
       <div class="text-center mt-5">
-      <button type="submit" class="btn btn-primary btn-block mb-4">Save and contimue</button>
+      <button type="submit" class="btn btn-primary btn-block mb-4">Update</button>
       </div>
 
       </form>

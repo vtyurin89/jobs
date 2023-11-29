@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import *
 
+
 class UserAdmin(admin.ModelAdmin):
     list_display = ('username', 'id', 'is_employer',)
 
@@ -14,7 +15,7 @@ class EmployerProfileAdmin(admin.ModelAdmin):
 
 
 class JobPostingAdmin(admin.ModelAdmin):
-    list_display = ('title', 'industry', 'employer', 'visible', 'id')
+    list_display = ('title', 'industry', 'employer', 'is_archived', 'id')
 
 
 class IndustryAdmin(admin.ModelAdmin):

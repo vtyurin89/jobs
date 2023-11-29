@@ -25,7 +25,11 @@
               {% endif %}
                <p class="job-description">Required experience: </p>
               </div>
+
+              <!-- buttons -->
               <div class="description-button-div">
+
+                  {% if not user.is_employer %}
               <a class="btn btn-custom-job-respond btn-info">Respond</a>
 
               <a class="btn btn-favourite btn-outline-info" id="add-to-favourites">
@@ -37,6 +41,13 @@
                   {% endif %}
                   </div>
               </a>
+                 {% else %}
+
+                  {% if job_posting.employer == request.user %}
+              <a class="btn btn-custom-job-respond btn-info">Archive</a>
+                  {% endif %}
+
+                 {% endif %}
               </div>
           </div>
           </div>
