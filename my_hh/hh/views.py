@@ -18,16 +18,18 @@ from .utils import get_filter_kwargs, calculate_age, generate_post_dict
 def index(request):
     context = {}
     if request.user.is_authenticated:
-        job_postings = JobPosting.objects.all()
-        context = {'job_postings' : job_postings}
 
         #loading index page for employer
         if request.user.is_employer:
-            pass
+            my_job_postings = JobPosting.objects.filter(employer=request.user)
+            notifications = ResumeToEmployerNotification.objects.filter(job_posting__in=my_job_postings)
+            context.update({'my_job_postings': my_job_postings, 'notifications': notifications})
 
         # loading index page for job seeker
-        # job seeker has a city
         elif not request.user.is_employer:
+            job_postings = JobPosting.objects.exclude(is_archived=True)
+            context.update({'job_postings' : job_postings})
+
             # job seeker has a city
             if request.user.jobseekerprofile.preferred_location:
                 jobs_in_location = JobPosting.objects.filter(
@@ -66,17 +68,28 @@ def index(request):
 
 @login_required
 def job_posting_view(request, job_posting_uuid):
+    context = {}
     try:
-        job_posting = JobPosting.objects.get(id=job_posting_uuid)
+        job_posting = JobPosting.objects.annotate(
+            is_liked=Exists(
+                JobPosting.liked.through.objects.filter(
+                    jobposting_id=OuterRef('pk'), user=request.user
+                )
+            )
+        ).get(id=job_posting_uuid)
     except ObjectDoesNotExist:
         raise Http404
 
+    #add resumes and check like only if request.user is job seeker
     if not request.user.is_employer:
-        is_liked_by_user_filter = job_posting.liked.filter(id=request.user.id)
-        is_liked_by_user = True if len(is_liked_by_user_filter) > 0 else False
-    else:
-        is_liked_by_user = False
-    context = {'job_posting': job_posting, 'is_liked_by_user': is_liked_by_user}
+        resumes = Resume.objects.filter(user=request.user)
+        resume_sent = ResumeToEmployerNotification.objects.filter(
+            resume__in=resumes,
+            job_posting__id=job_posting_uuid
+        ).exists()
+        context.update({'resumes': resumes, 'resume_sent': resume_sent})
+
+    context.update({'job_posting': job_posting})
     return render(request, "hh/job_posting.html", context)
 
 
@@ -333,6 +346,28 @@ def my_resumes_view(request):
 
 
 @login_required
+def send_resume(request, job_posting_uuid, resume_uuid):
+    ResumeToEmployerNotification.objects.get_or_create(
+        resume=get_object_or_404(Resume, id=resume_uuid),
+        job_posting=get_object_or_404(JobPosting, id=job_posting_uuid),
+        )
+    job_posting = JobPosting.objects.get(id=job_posting_uuid)
+    return redirect(job_posting)
+
+
+@login_required
+def archive_job_posting(request, job_posting_uuid):
+    try:
+        job_posting = JobPosting.objects.get(id=job_posting_uuid)
+        job_posting.is_archived = True
+        job_posting.save()
+    except ObjectDoesNotExist:
+        raise Http404
+    print("function worked")
+    return redirect(job_posting)
+
+
+@login_required
 def delete_resume(request, resume_uuid):
     Resume.objects.get(id=resume_uuid).delete()
     return HttpResponseRedirect(reverse("my_resumes"))
@@ -341,6 +376,7 @@ def delete_resume(request, resume_uuid):
 @login_required
 def resume_view(request, resume_uuid):
     context = {}
+
     try:
         resume = Resume.objects.get(id=resume_uuid)
     except ObjectDoesNotExist:

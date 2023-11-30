@@ -29,22 +29,61 @@
               <!-- buttons -->
               <div class="description-button-div">
 
-                  {% if not user.is_employer %}
-              <a class="btn btn-custom-job-respond btn-info">Respond</a>
+                  <!-- Job posting archived -->
+              {% if job_posting.is_archived %}
+              <h5 class="grey-text">This job posting is archived</h5>
+              {% else %}
 
-              <a class="btn btn-favourite btn-outline-info" id="add-to-favourites">
-                  <div>
-                  {% if is_liked_by_user %}
-                  <i class="fa-solid fa-heart fa-lg" id="like-icon"></i>
+                  <!-- User is job seeker -->
+                  {% if not user.is_employer %}
+
+                  <!-- Resume already sent -->
+                  {% if resume_sent %}
+
+                  <h6 class="mb-3 grey-text">You have already responded to this vacancy</h6>
+
                   {% else %}
-                  <i class="fa-regular fa-heart fa-lg" id="like-icon"></i>
+                      <!-- Resume not sent -->
+
+                      <!-- User has no resumes -->
+                      {% if not resumes %}
+
+                      <a class="btn btn-custom-job-respond btn-info" href="{% url 'create_resume_main' %}">Respond</a>
+
+                      <!-- User has at least one resume -->
+                      {% else %}
+
+                      <div class="dropdown d-inline">
+                      <a class="btn btn-info btn-custom-job-respond dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                        Respond
+                      </a>
+
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                          {% for resume in resumes %}
+                          <li><a class="dropdown-item" href="{% url 'send_resume' job_posting_uuid=job_posting.id resume_uuid=resume.id %}">Resume: {{ resume.title }}</a></li>
+                          {% endfor %}
+                      </ul>
+                        </div>
+
+                      {% endif %}
                   {% endif %}
-                  </div>
-              </a>
+
+                                    <!-- Like button -->
+                  <a class="btn btn-favourite btn-outline-info" id="add-to-favourites">
+                      <div>
+                      {% if job_posting.is_liked %}
+                      <i class="fa-solid fa-heart fa-lg" id="like-icon"></i>
+                      {% else %}
+                      <i class="fa-regular fa-heart fa-lg" id="like-icon"></i>
+                      {% endif %}
+                      </div>
+                  </a>
                  {% else %}
 
+                  <!-- The user is employer AND they created the job posting -->
                   {% if job_posting.employer == request.user %}
-              <a class="btn btn-custom-job-respond btn-info">Archive</a>
+              <a class="btn btn-custom-job-respond btn-info" href="{% url 'archive_job_posting' job_posting_uuid=job_posting.id %}">Archive</a>
+                  {% endif %}
                   {% endif %}
 
                  {% endif %}

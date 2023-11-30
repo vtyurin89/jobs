@@ -6,8 +6,6 @@
 {% block body %}
 
 
-
-
         {% if not user.is_authenticated %}
        <div class="container mt-5">
         <!-- Index page search bar -->
@@ -32,8 +30,67 @@
         </div>
         </div>
 
+
         {% elif user.is_authenticated and user.is_employer %}
-        employer
+
+        <!-- Employer's part starts here -->
+        <!-- Events -->
+
+        <div class="employer-events container">
+        <div class="row">
+            <div class="col col-md-3">
+                <h5 class="mb-3">My Events</h5>
+                <div class="mt-3">
+                <p>Notifications</p>
+                <p>New Notifications</p>
+                <p>Vacancies created</p>
+                </div>
+            </div>
+
+            <!-- Job postings-->
+            <div class="col col-md-9">
+               <h5 class="mb-3">My Job postings</h5>
+
+                {% for job in my_job_postings %}
+        <div class="job-search-result-block">
+                    <a class="job-search-result-title" href="{{ job.get_absolute_url }}"><b>{{ job.title }}</b></a>
+
+                    <!-- Salary in search result -->
+                    {% if job.min_salary and job.max_salary %}
+                    <h4 class=""><b>{{ job.min_salary.normalize | intcomma }} - {{ job.max_salary.normalize | intcomma }} ₽</b></h4>
+                    {% elif job.min_salary %}
+                    <h4 class="mt-3"><b>From {{ job.min_salary.normalize | intcomma }} ₽</b></h4>
+                    {% elif job.max_salary %}
+                    <h4 class="mt-3"><b>To {{ job.max_salary.normalize | intcomma }} ₽</b></h4>
+                    {% endif %}
+
+                    {% if job.employer.employerprofile.company_name %}
+                    <div>{{ job.city }}, {{ job.employer.employerprofile.company_name }}</div>
+                    {% else %}
+                    <div>{{ job.city }}</div>
+                    {% endif %}
+
+                    {% if job.is_remote %}
+                    <p class="mt-3">Work from home</p>
+                    {% endif %}
+
+                    {% if job.is_part_time %}
+                    <p class="mt-3">Part-time</p>
+                    {% endif %}
+
+                    {% if job.is_archived %}
+                    <p class="mb-0 mt-1"><b>Archived</b></p>
+                    {% else %}
+                    <p class="mb-0 mt-1"><b>Active</b></p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+
+
+            </div>
+        </div>
+        </div>
 
         {% elif user.is_authenticated and not user.is_employer %}
 

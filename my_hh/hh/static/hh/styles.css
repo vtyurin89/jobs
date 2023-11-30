@@ -65,6 +65,12 @@ main {
 
 
 /* Index page */
+
+.employer-events {
+    margin-top: 30px;
+}
+
+
 .index-search-bar-div {
     max-width: 800px;
     margin: auto;
@@ -169,6 +175,10 @@ input[type="checkbox"] {
     padding-right: 90px;
     text-align: center;
     height: 46px;
+}
+
+.grey-text {
+    background-color: #fafafa;
 }
 
 .btn-favourite {

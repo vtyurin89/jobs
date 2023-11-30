@@ -173,7 +173,6 @@ class ResumeWorkExperienceBlock(models.Model):
 
 class ResumeToEmployerNotification(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    employer = models.ForeignKey('User', on_delete=models.CASCADE, related_name='notification_receivers')
     resume = models.ForeignKey('Resume', on_delete=models.CASCADE, related_name='resumes')
     job_posting = models.ForeignKey('JobPosting', on_delete=models.CASCADE, related_name='resumes')
     received = models.BooleanField(default=False)
