@@ -16,18 +16,16 @@
         <h3>Let's find yours!</h3>
         </div>
         <div class="index-search-bar-div">
-        <form class="d-flex w-100 mt-5">
+        <form class="d-flex w-100 mt-5" action="{% url 'register' %}">
         <input class="form-control me-2" type="search" name="search_bar" placeholder="Find that perfect job..." aria-label="Search">
         <button class="btn btn-outline-primary" type="submit">Search</button>
         </form>
         <div class="mt-3">
-        <a href="#">I'm looking for an employee...</a>
+        <a href="{% url 'register' %}">I'm looking for an employee...</a>
         </div>
         </div>
 
-        <div class="mt-5">
-        <h3>Featured jobs</h3>
-        </div>
+
         </div>
 
 
@@ -38,18 +36,33 @@
 
         <div class="employer-events container">
         <div class="row">
-            <div class="col col-md-3">
+            <div class="col-12 col-md-3">
                 <h5 class="mb-3">My Events</h5>
                 <div class="mt-3">
-                <p>Notifications</p>
-                <p>New Notifications</p>
-                <p>Vacancies created</p>
+                    <div class="row ms-1 mb-3">
+                        <div class="col-9">
+                        Notifications
+                        </div>
+                        <div class="col-3">
+                        <a href="{% url 'my_notifications' %}">{{ notifications }}</a>
+                        </div>
+                    </div>
+                    <div class="row ms-1 mb-3">
+                        <div class="col-9">
+                        Vacancies created
+                        </div>
+                        <div class="col-3">
+                            <a href="{% url 'my_job_postings' %}">{{ my_job_postings.count }}</a>
+                        </div>
+                    </div>
+
+                <p></p>
                 </div>
             </div>
 
             <!-- Job postings-->
             <div class="col col-md-9">
-               <h5 class="mb-3">My Job postings</h5>
+               <h5 class="mb-3">Recent Job postings</h5>
 
                 {% for job in my_job_postings %}
         <div class="job-search-result-block">

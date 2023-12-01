@@ -79,6 +79,7 @@
 
                   {% else %}
                 <li><a class="dropdown-item" href="{% url 'my_job_postings' %}">My job postings</a></li>
+                <li><a class="dropdown-item" href="{% url 'my_notifications' %}">My notifications</a></li>
                 <li><a class="dropdown-item" href="{% url 'edit_profile' %}">Edit profile</a></li>
                   {% endif %}
 
@@ -102,6 +103,8 @@
         {% block body %}
 
         {% endblock body %}
+
+
     </main>
 
 </body>

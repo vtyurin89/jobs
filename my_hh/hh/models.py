@@ -70,6 +70,7 @@ class JobPosting(models.Model):
     max_salary = models.DecimalField(max_digits=10, decimal_places=2)
     is_archived = models.BooleanField(default=False)
     liked = models.ManyToManyField('User', blank=True, related_name='liked_posting')
+    date = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
         return self.title
@@ -176,9 +177,10 @@ class ResumeToEmployerNotification(models.Model):
     resume = models.ForeignKey('Resume', on_delete=models.CASCADE, related_name='resumes')
     job_posting = models.ForeignKey('JobPosting', on_delete=models.CASCADE, related_name='resumes')
     received = models.BooleanField(default=False)
+    date = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
-        return f'Notification: {self.resume} for {self.employer}'
+        return f'Notification: {self.resume} for {self.job_posting}'
 
 
 @receiver(post_save, sender=User)

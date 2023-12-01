@@ -1,5 +1,6 @@
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.db.models import Count, Exists, OuterRef
 from django.http import HttpResponseRedirect, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -21,8 +22,10 @@ def index(request):
 
         #loading index page for employer
         if request.user.is_employer:
-            my_job_postings = JobPosting.objects.filter(employer=request.user)
-            notifications = ResumeToEmployerNotification.objects.filter(job_posting__in=my_job_postings)
+            my_job_postings = JobPosting.objects.filter(
+                employer=request.user
+                ).annotate().order_by('-date')[:10]
+            notifications = ResumeToEmployerNotification.objects.filter(job_posting__in=my_job_postings).count()
             context.update({'my_job_postings': my_job_postings, 'notifications': notifications})
 
         # loading index page for job seeker
@@ -149,7 +152,15 @@ def my_job_postings_view(request):
     if not request.user.is_employer:
         raise PermissionDenied()
     my_job_postings = JobPosting.objects.filter(employer=request.user).order_by('-job_open_date')
-    context = {'my_job_postings': my_job_postings}
+
+    #Pagination
+    pagination_range = 15
+    paginator = Paginator(my_job_postings, pagination_range)
+    page_number = request.GET.get("page")
+    page_object = paginator.get_page(page_number)
+
+
+    context = {'page_object': page_object}
     return render(request, "hh/my_job_postings.html", context)
 
 
@@ -258,6 +269,9 @@ def edit_resume_main_view(request, resume_uuid):
         raise PermissionDenied()
 
     resume = get_object_or_404(Resume, id=resume_uuid)
+    if resume.user != request.user:
+        raise PermissionDenied()
+
     form = CreateResumeForm(request.POST or None, instance=resume, user=request.user)
     if request.method == 'POST':
         if form.is_valid():
@@ -376,6 +390,8 @@ def delete_resume(request, resume_uuid):
 @login_required
 def resume_view(request, resume_uuid):
     context = {}
+    if request.user.is_employer:
+        raise PermissionDenied()
 
     try:
         resume = Resume.objects.get(id=resume_uuid)
@@ -389,6 +405,25 @@ def resume_view(request, resume_uuid):
                     'education_blocks': education_blocks,
                     'work_experience_blocks': work_experience_blocks})
     return render(request, "hh/resume.html", context)
+
+
+def my_notifications_view(request):
+    if not request.user.is_employer:
+        raise PermissionDenied()
+    context = {}
+
+    notifications = ResumeToEmployerNotification.objects.filter(
+                job_posting__in=JobPosting.objects.filter(employer=request.user)
+                ).select_related("job_posting").order_by("-date")
+
+    # pagination
+    pagination_range = 15
+    paginator = Paginator(notifications, pagination_range)
+    page_number = request.GET.get("page")
+    page_object = paginator.get_page(page_number)
+    context.update({"page_object": page_object})
+
+    return render(request, "hh/my_notifications.html", context)
 
 
 def login_view(request):
@@ -419,8 +454,6 @@ def logout_view(request):
 def register_view(request):
     if request.method == 'POST':
 
-        print(request.POST)
-
         username = request.POST["username"]
         email = request.POST["email"]
         first_name = request.POST['first_name']
@@ -441,8 +474,7 @@ def register_view(request):
             return render(request, "hh/register.html")
 
         # EmployerProfile or JobSeekerProfile
-        # are created by create_user_profile function which is a signal receiver
-        # check models.py for more details
+        # are created by create_user_profile function which is a signal receiver located in models.py
 
         # Modifying additional profile
         if user.is_employer:

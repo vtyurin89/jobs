@@ -11,6 +11,8 @@ urlpatterns = [
     path("account/my_job_postings/", views.my_job_postings_view, name='my_job_postings'),
 
     path("account/edit_profile", views.edit_profile_view, name="edit_profile"),
+    path("account/notifications", views.my_notifications_view, name="my_notifications"),
+
     path("job_posting/<uuid:job_posting_uuid>/", views.job_posting_view, name="job_posting"),
     path('favourite/<uuid:job_posting_uuid>', views.like_job_posting, name='like_job_posting'),
     path('account/favourite_job_postings', views.favourite_job_postings, name='favourite_job_postings'),

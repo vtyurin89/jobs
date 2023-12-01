@@ -1,10 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "hh/layout.html" %}
+{% load static %}
+
+{% block title %}My notifications{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <h3 class="mt-5"><b>My notifications</b></h3>
+    <hr class="mt-5">
+    <div class="row">
+        <div class="col col-md-4">
+          <h6 class="text-muted">Resume</h6>
+        </div>
+        <div class="col col-md-5">
+          <h6 class="text-muted">Vacancy</h6>
+        </div>
+        <div class="col col-md-3">
+          <h6 class="text-muted">Date</h6>
+        </div>
+    </div>
+
+    <!-- Notifications -->
+
+    {% for notification in page_object %}
+
+    <div class="row mt-3">
+        <div class="col col-md-4">
+            <p>{{ notification.resume }}</p>
+        </div>
+        <div class="col col-md-5">
+          <p><a href="{{ notification.job_posting.get_absolute_url }}">{{ notification.job_posting }}</a></p>
+        </div>
+        <div class="col col-md-3">
+          <p>{{ notification.date }}</p>
+        </div>
+    </div>
+
+    {% endfor %}
+
+</div>
+
+    <!-- Pagination !
+          -->
+    {% if page_object.has_other_pages %}
+        <nav aria-label="page navigation" class="mt-5">
+        <ul class="pagination">
+        {% if page_object.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_object.previous_page_number }}">&lt</a>
+        </li>
+        {% endif %}
+
+        {% for page in page_object.paginator.page_range %}
+        {% if page_object.number == page %}
+        <li class="page-item">
+            <a class="page-link" style="color:black; text-decoration: none;">{{ page }}</a>
+        </li>
+        {% elif page >= page_object.number|add:-2 and page <= page_object.number|add:2 %}
+        <li class="page-num">
+            <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+
+        {% if page_object.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_object.next_page_number }}">&gt</a>
+        </li>
+        {% endif %}
+        </ul>
+        </nav>
+        {% endif %}
+
+{% endblock body %}
