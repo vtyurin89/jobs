@@ -23,7 +23,12 @@
               {% else %}
                <p class="job-description">Full time, full day</p>
               {% endif %}
-               <p class="job-description">Required experience: </p>
+
+              <!-- Remote or not -->
+              {% if job_posting.is_remote %}
+                <p class="job-description">Remote</p>
+              {% endif %}
+
               </div>
 
               <!-- buttons -->

@@ -10,11 +10,13 @@ from .models import *
 class CreateJobPostingForm(ModelForm):
     def __init__(self, *args, **kwargs):
         self.employer = kwargs.pop("employer", None)
+        self.initial_industry = kwargs.pop("initial_industry", None)
         super(CreateJobPostingForm, self).__init__(*args, **kwargs)
 
     title = forms.CharField(label='Title', max_length=500, required=True,
                                  widget=forms.TextInput(attrs={'class': 'form-control', 'name': 'title'}))
     industry = ModelChoiceField(label='Industry', required=True, queryset=Industry.objects.all(),
+                                initial=Industry.objects.get_or_create(title="Unspecified")[0],
                                  widget=forms.Select(attrs={'class': 'form-select', 'name': 'industry'}))
     country = forms.ChoiceField(label='Country', required=True, choices=JobPosting.COUNTRY_CHOICES,
                                  widget=forms.Select(attrs={'class': 'form-select', 'name': 'country', 'id': 'country'}))

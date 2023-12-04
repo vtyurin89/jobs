@@ -62,7 +62,11 @@
 
             <!-- Job postings-->
             <div class="col col-md-9">
-               <h5 class="mb-3">Recent Job postings</h5>
+               <h5 class="mb-3">My recent job postings</h5>
+                {% if not my_job_postings %}
+                <p>Seems that you haven't created any job postings yet...</p>
+                {% endif %}
+
 
                 {% for job in my_job_postings %}
         <div class="job-search-result-block">

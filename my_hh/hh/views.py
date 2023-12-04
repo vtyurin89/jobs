@@ -1,10 +1,10 @@
+
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db.models import Count, Exists, OuterRef
+from django.db.models import Count, Exists, OuterRef, Q
 from django.http import HttpResponseRedirect, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
 from django.contrib import messages
 from django.db import IntegrityError
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
@@ -13,7 +13,7 @@ import json
 
 from .models import *
 from .forms import *
-from .utils import get_filter_kwargs, calculate_age, generate_post_dict
+from .utils import get_filter_kwargs, calculate_age, generate_post_dict, get_excluded_clauses
 
 
 def index(request):
@@ -154,7 +154,7 @@ def my_job_postings_view(request):
     my_job_postings = JobPosting.objects.filter(employer=request.user).order_by('-job_open_date')
 
     #Pagination
-    pagination_range = 15
+    pagination_range = 5
     paginator = Paginator(my_job_postings, pagination_range)
     page_number = request.GET.get("page")
     page_object = paginator.get_page(page_number)
@@ -169,43 +169,47 @@ def search_for_jobs(request):
     #This page is only for job seekers
     if request.user.is_employer:
         raise PermissionDenied()
-    context = {'title': 'Search results:',
+    context = {'title': 'Search results',
                'countries': JobPosting.COUNTRY_CHOICES,
                'industries': Industry.objects.all(),
                }
 
     # Search results
-    if request.method == 'POST':
-        context['title'] = 'Search results'
+    # time to construct the filter
+    filter_list = ['search_bar', 'part_time', 'remote', 'country', 'city', 'industry', 'salaryRadio']
+    filter_kwargs = get_filter_kwargs(request, filter_list)
 
-        #time to construct the filter
-        filter_list = ['search_bar', 'part_time', 'remote', 'country', 'city', 'industry', 'salaryRadio']
-        filter_kwargs = get_filter_kwargs(request, filter_list)
-        excluded_words_in_query = request.POST.get('exclude_words', None)
+    #excluded words if any
+    excluded_words_in_query = request.GET.get('exclude_words', "").split()
+    excluded_clauses = get_excluded_clauses(excluded_words_in_query)
 
-        if excluded_words_in_query:
-            jobs = JobPosting.objects.annotate(
-                is_liked=Exists(
-                    JobPosting.liked.through.objects.filter(
-                        jobposting_id=OuterRef('pk'), user=request.user
-                    )
+    if excluded_words_in_query:
+        jobs = JobPosting.objects.annotate(
+            is_liked=Exists(
+                JobPosting.liked.through.objects.filter(
+                    jobposting_id=OuterRef('pk'), user=request.user
                 )
-            ).filter(**filter_kwargs).exclude(
-                title__icontains=excluded_words_in_query
-            ).exclude(is_archived=True).order_by("-job_open_date")
-        else:
-            jobs = JobPosting.objects.annotate(
-                is_liked=Exists(
-                    JobPosting.liked.through.objects.filter(
-                        jobposting_id=OuterRef('pk'), user=request.user
-                    )
-                )
-            ).filter(**filter_kwargs).exclude(is_archived=True).order_by("-job_open_date")
-
-        context.update({'jobs': jobs})
-        return render(request, 'hh/search_for_jobs.html', context)
+            )
+        ).filter(**filter_kwargs).exclude(
+            excluded_clauses
+        ).exclude(is_archived=True).order_by("-job_open_date")
     else:
-        return render(request, 'hh/search_for_jobs.html', context)
+        jobs = JobPosting.objects.annotate(
+            is_liked=Exists(
+                JobPosting.liked.through.objects.filter(
+                    jobposting_id=OuterRef('pk'), user=request.user
+                )
+            )
+        ).filter(**filter_kwargs).exclude(is_archived=True).order_by("-job_open_date")
+
+    # Pagination
+    pagination_range = 10
+    paginator = Paginator(jobs, pagination_range)
+    page_number = request.GET.get("page")
+    page_object = paginator.get_page(page_number)
+
+    context.update({'page_object': page_object, 'result_number': jobs.count()})
+    return render(request, 'hh/search_for_jobs.html', context)
 
 
 @login_required
@@ -216,6 +220,7 @@ def create_job_posting_view(request):
         raise PermissionDenied()
 
     # Creating a new job posting using a form
+
     form = CreateJobPostingForm(request.POST or None)
     if request.method == 'POST':
         form = CreateJobPostingForm(request.POST, employer=request.user)

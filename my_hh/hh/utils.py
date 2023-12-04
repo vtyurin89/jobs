@@ -1,4 +1,8 @@
+import functools
+import operator
 from datetime import date
+from django.db.models import Q
+
 from .models import Industry
 
 
@@ -38,21 +42,32 @@ def salary_radio_value(salaryRadio):
 def get_filter_kwargs(request, filter_list):
     """
     :param request: request
-    :param filter_list: list of html names from request.POST
-    :return: dictionary of filtered names which were in request.POST
+    :param filter_list: list of html names from request.GET
+    :return: dictionary of filtered names which were in request.GET
     """
 
-    filter_dict = {'search_bar': ('title__icontains', request.POST.get('search_bar', None)),
+    filter_dict = {'search_bar': ('title__icontains', request.GET.get('search_bar', None)),
                    'part_time': ('is_part_time', True),
                    'remote': ('is_remote', True),
-                   'country': ('country', request.POST.get('country', None)),
-                   'city': ('city', request.POST.get('city', None)),
-                   'industry': ('industry', Industry.objects.filter(title=request.POST.get('industry', None)).first()),
-                   'salaryRadio': ('min_salary__gte', salary_radio_value(request.POST.get('salaryRadio', None))),
+                   'country': ('country', request.GET.get('country', None)),
+                   'city': ('city', request.GET.get('city', None)),
+                   'industry': ('industry', Industry.objects.filter(title=request.GET.get('industry', None)).first()),
+                   'salaryRadio': ('min_salary__gte', salary_radio_value(request.GET.get('salaryRadio', None))),
                    }
     filter_kwargs = {filter_dict[custom_filter][0]: filter_dict[custom_filter][1]
-                     for custom_filter in filter_list if request.POST.get(custom_filter, None)}
+                     for custom_filter in filter_list if request.GET.get(custom_filter, None)}
     return filter_kwargs
+
+
+def get_excluded_clauses(excluded_words_in_query):
+    """
+    :param request: request
+    :return: Q object OR an empty list (if there were no words to exclude)
+    """
+    excluded_clauses = functools.reduce(operator.or_,
+    (Q(title__icontains=word) for word in excluded_words_in_query),) \
+        if len(excluded_words_in_query) > 0 else []
+    return excluded_clauses
 
 
 def calculate_age(date_of_birth):
