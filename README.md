@@ -20,7 +20,7 @@
 
 # Features
 
-## Login / Register Page
+### Login / Register Page
 
 The users need to create an account and log in to use the application. 
 
@@ -44,7 +44,7 @@ The register page creates a dynamic javascript dropdown when the user is choosin
 
 If the account was not created on the register page (for example, by using the command 'createsuperuser'), the application will create a Jobseeker profile.
 
-## Index Page
+### Index Page
 
 The content of the index page will change depending on the status of the user.
 
@@ -54,19 +54,19 @@ If the user is a Jobseeker, the front page will be a little bit more complex.
 
 Depending on the city chosen during the registration the application will get 12 most recent job postings in the selected location as well as a list of relevant industries. If the user changes the city on the settings page, the job postings and relevant industries on the front page will change accordingly.
 
-## Create a job posting (Employer)
+### Create a job posting (Employer)
 
 The Employer can create a new job posting by filling the form.
 
-## My job postings (Employer)
+### My job postings (Employer)
 
 The Employer can observe the list of all job postings they created. The list also shows which job postings are still active and which were archived. Pagination is implemented on this page.
 
-## My notifications (Employer)
+### My notifications (Employer)
 
 Here the Employer can find the list of all notifications they received. Each notification includes the name of the vacancy, the title of the resume received and a timestamp. A notification is automatically created each time a Job Seeker applies for a job by sending resume.
 
-## Job Posting Page (Employer and Jobseeker)
+### Job Posting Page (Employer and Jobseeker)
 
 Both Employers and Jobseekers can read the contents of the Job posting, and they can interact with this page in different ways.
 
@@ -78,11 +78,11 @@ The Jobseeker can also apply for a job by pressing the "Respond" button. If the 
 
 The Employer that created the Job posting can archive it by pressing the "Archive" button. The Job posting will be archived and forever removed from the search page of Jobseekers.
 
-## Create a resume (Jobseeker)
+### Create a resume (Jobseeker)
 
 Jobseekers can create a new resume by filling a form.
 
-## View my resume (Jobseeker)
+### View my resume (Jobseeker)
 
 This page is fairly complex. The user can read the contents of their resume and also press the links to edit three main parts of it:
  - Edit main info (name, age, location, etc.).
@@ -103,17 +103,17 @@ Same as education, work experience part is also divided into blocks which can be
 
 Each work experience block is basically a job with a start date and an end date (or without an end if the user is still employed). The application will arrange all of them in chronological order on the resume page.
 
-## My resumes (Jobseeker)
+### My resumes (Jobseeker)
 
 The idea behind this application is that each Jobseeker may want to apply for different jobs and therefore need different resumes. These resumes may have different titles and include different info. On this page the user can see the list of all of their resumes and press a link to go to the page of the corresponding resume.
 
 On this page the user can also delete any resume forever.
 
-## Selected (favourite) job postings (Jobseeker)
+### Selected (favourite) job postings (Jobseeker)
 
 If the Jobseeker liked a job posting, it will be added to this page. The Jobseeker can observe the list of their favourite job postings and unlike the ones which no longer seem interesting. The like\unlike is implemented with JavaScript, so the contents of the page will change after a manual refresh.
 
-## Search (Jobseeker)
+### Search (Jobseeker)
 
 This page includes a search bar and several filters so that the Jobseeker could find their dream job! The search result will never include archived job postings.
 
@@ -126,7 +126,7 @@ The filters are:
 
 The user can apply one or several filters to find a job posting which satisfies all of their requirements. Also pagination is implemented on this page to split the search results.
 
-## Edit profile (Jobseeker and Employer)
+### Edit profile (Jobseeker and Employer)
 
 Both Employers and Jobseekers can edit their main profile information.
 
