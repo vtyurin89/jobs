@@ -1,5 +1,5 @@
 # JOBS
-#### Video Demo:  
+#### Video Demo: <https://www.youtube.com/watch?v=eVhgddtPeFM>
 #### Description: A job board website which allows users to either post job ads (as employers) or search for jobs that they need.
 
 # Distinctiveness and Complexity
