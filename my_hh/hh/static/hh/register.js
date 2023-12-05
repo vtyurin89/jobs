@@ -8,7 +8,6 @@ var config = {
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOMloaded');
 
     // Use buttons to toggle between register options
     load_job_seeker_form();
@@ -129,6 +128,12 @@ function load_register_form() {
     document.getElementById('employer_register').innerHTML = 'Switch to employer';
     document.getElementById('register_label').innerHTML = 'Register as a job seeker';
    load_job_seeker_form();
+
+    addDropdown();
+    const cityInput = document.getElementById('city');
+    document.getElementById('country').addEventListener('change', () => getCityList());
+    cityInput.addEventListener("input", () => dynamicInputChange(cityInput));
+
     }
 }
 
@@ -162,21 +167,6 @@ function dynamicInputChange(cityInput) {
     }
     createDropdown(filteredCities, letters);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // Checks if registration form is valid
