@@ -7,6 +7,8 @@
 #### Jobs is basically two web applications in one! Depending on what type of account the user creates (Employer or Jobseeker), the website will behave in two entirely different ways.
 #### Jobseeker account allows the user to *create and edit resumes, search for job postings, add job postings to favourites and apply for job positions*.
 #### Employer account allows the user to *create job postings, archive job postings which are no longer relevant and receive notifications when another user applies for a job*.
+#### Jobs is not similar to any other projects that I worked on during CS50 Web course. Jobs is not a social media app and not an e-commerce website.
+#### As for complexity, I used Django with 9 models (some of which are reasonably complex), several javascript files on the frontend. Some of the views utilize quite complex queries with an unspecified number of arguments. The web application has responsive design and adjusts to different screen sizes.
 
 # Technologies
 
