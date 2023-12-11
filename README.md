@@ -134,10 +134,10 @@ Both Employers and Jobseekers can edit their main profile information.
 
 # Files information
 
- - utils.py includes the additional functions which are used in views.py: country_name_by_ISO_3166_1_alpha_2_code(), salary_radio_value(), get_filter_kwargs(), get_excluded_clauses(), calculate_age(), generate_post_dict().
-They are mostly used in queries.
- - forms.py includes 4 Django forms which are used to create corresponding models.
- - Templates folder includes all the html temlates.
+ - views.py includes all views used in the application (index, job_posting_view, like_job_posting, favourite_job_postings, search_for_jobs, create_job_posting_view, create_resume_view, edit_resume_main_view, edit_resume_education_view,  edit_resume_work_experience_view, my_resumes_view, send_resume, archive_job_posting, delete_resume, resume_view, my_notifications_view, login_view, logout_view, register_view)
+ - utils.py includes the additional functions which are used in views.py (country_name_by_ISO_3166_1_alpha_2_code(), salary_radio_value(), get_filter_kwargs(), get_excluded_clauses(), calculate_age(), generate_post_dict()). They are mostly used in queries.
+ - forms.py includes 4 Django forms (CreateJobPostingForm, CreateResumeForm, EditEmployerProfileForm, EditJobSeekerProfileForm). They are used to create corresponding models.
+ - Templates folder includes all the html temlates (create_job_posting.html, create_resume_main.html, edit_profile.html, edit_resume_edication.html, edit_resume_main.html, edit_resume_work_experience.html, favourite_job_postings.html, index.html, job_posting.html, layout.html, login.html, my_job_postings.html, my_notifications.html, my_resumes.html, register.html, resume.html, search_for_jobs.html).
  - Static folder includes CSS file and several js files which run JavaScript code in django templates:
    - create_job_posting.js - creates dynamic city dropdown in create_job_posting.html.
    - edit_resume_education.js - creates and removes education blocks.
@@ -153,3 +153,7 @@ They are mostly used in queries.
 
  - Install project dependencies by running 'pip install -r requirements.txt'
  - Make and apply migrations by running 'python manage.py makemigrations' and then 'python manage.py migrate'.
+
+# Additional information
+
+Some of the design of the application was inspired by a real website HeadHunter. This explains why the main folders are called hh and my_hh.
